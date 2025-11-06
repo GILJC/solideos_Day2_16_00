@@ -110,20 +110,32 @@
             opacity: 0.9;
         }
 
-        .input-group input {
+        .input-group input,
+        .input-group select {
             padding: 12px 15px;
             border: 2px solid rgba(255,255,255,0.3);
             border-radius: 8px;
             font-size: 1rem;
             background: rgba(255,255,255,0.9);
             transition: all 0.3s;
+            cursor: pointer;
         }
 
-        .input-group input:focus {
+        .input-group input:focus,
+        .input-group select:focus {
             outline: none;
             border-color: var(--white);
             background: var(--white);
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .input-group select {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 20px;
+            padding-right: 40px;
         }
 
         .search-btn {
@@ -480,15 +492,32 @@
         <header>
             <h1>🌍 맞춤형 여행 플래너</h1>
 
-            <!-- 여행지 입력 폼 -->
+            <!-- 여행지 선택 폼 -->
             <div class="trip-form">
                 <div class="input-group">
                     <label>📍 출발지</label>
-                    <input type="text" id="origin" placeholder="예: 서울" value="서울">
+                    <select id="origin" onchange="updateTrip()">
+                        <option value="seoul">🇰🇷 서울 (Seoul)</option>
+                        <option value="busan">🇰🇷 부산 (Busan)</option>
+                        <option value="jeju">🇰🇷 제주 (Jeju)</option>
+                        <option value="tokyo">🇯🇵 도쿄 (Tokyo)</option>
+                        <option value="osaka">🇯🇵 오사카 (Osaka)</option>
+                        <option value="beijing">🇨🇳 베이징 (Beijing)</option>
+                        <option value="shanghai">🇨🇳 상하이 (Shanghai)</option>
+                    </select>
                 </div>
                 <div class="input-group">
                     <label>📍 목적지</label>
-                    <input type="text" id="destination" placeholder="예: 런던" value="런던">
+                    <select id="destination" onchange="updateTrip()">
+                        <option value="london">🇬🇧 런던 (London)</option>
+                        <option value="paris">🇫🇷 파리 (Paris)</option>
+                        <option value="newyork">🇺🇸 뉴욕 (New York)</option>
+                        <option value="tokyo">🇯🇵 도쿄 (Tokyo)</option>
+                        <option value="rome">🇮🇹 로마 (Rome)</option>
+                        <option value="barcelona">🇪🇸 바르셀로나 (Barcelona)</option>
+                        <option value="sydney">🇦🇺 시드니 (Sydney)</option>
+                        <option value="dubai">🇦🇪 두바이 (Dubai)</option>
+                    </select>
                 </div>
                 <button class="search-btn" onclick="updateTrip()">🔍 여행 계획 보기</button>
             </div>
@@ -585,55 +614,96 @@
     <script>
         // ==================== 데이터 정의 ====================
 
-        // 항공편 데이터
-        const flightsData = [
-            {
-                id: 1,
-                name: 'Korean Air KE907',
-                icon: '✈️',
-                price: 850000,
-                priceStr: '₩850,000',
-                duration: '11시간 30분',
-                durationMin: 690,
-                details: '인천 → 런던 히드로 직항',
-                cancelled: true,
-                cancelReason: '좌석 취소 발생 - 즉시 예약 가능!'
-            },
-            {
-                id: 2,
-                name: 'British Airways BA17',
-                icon: '✈️',
-                price: 920000,
-                priceStr: '₩920,000',
-                duration: '11시간 45분',
-                durationMin: 705,
-                details: '인천 → 런던 히드로 직항',
-                cancelled: true,
-                cancelReason: '특가 취소석 - 선착순 마감!'
-            },
-            {
-                id: 3,
-                name: 'Asiana OZ521',
-                icon: '✈️',
-                price: 780000,
-                priceStr: '₩780,000',
-                duration: '12시간 20분',
-                durationMin: 740,
-                details: '인천 → 런던 히드로 직항',
-                cancelled: false
-            },
-            {
-                id: 4,
-                name: 'Turkish Airlines TK091',
-                icon: '✈️',
-                price: 650000,
-                priceStr: '₩650,000',
-                duration: '16시간 40분',
-                durationMin: 1000,
-                details: '인천 → 이스탄불 → 런던 (경유)',
-                cancelled: false
-            }
-        ];
+        // 도시 데이터베이스
+        const cities = {
+            // 출발지
+            seoul: { name: '서울', nameEn: 'Seoul', country: '한국', lat: 37.5665, lng: 126.9780, airport: '인천국제공항' },
+            busan: { name: '부산', nameEn: 'Busan', country: '한국', lat: 35.1796, lng: 129.0756, airport: '김해국제공항' },
+            jeju: { name: '제주', nameEn: 'Jeju', country: '한국', lat: 33.4996, lng: 126.5312, airport: '제주국제공항' },
+            tokyo: { name: '도쿄', nameEn: 'Tokyo', country: '일본', lat: 35.6762, lng: 139.6503, airport: '나리타국제공항' },
+            osaka: { name: '오사카', nameEn: 'Osaka', country: '일본', lat: 34.6937, lng: 135.5023, airport: '간사이국제공항' },
+            beijing: { name: '베이징', nameEn: 'Beijing', country: '중국', lat: 39.9042, lng: 116.4074, airport: '베이징 서우두 공항' },
+            shanghai: { name: '상하이', nameEn: 'Shanghai', country: '중국', lat: 31.2304, lng: 121.4737, airport: '푸둥국제공항' },
+            // 목적지
+            london: { name: '런던', nameEn: 'London', country: '영국', lat: 51.5074, lng: -0.1278, airport: '히드로공항' },
+            paris: { name: '파리', nameEn: 'Paris', country: '프랑스', lat: 48.8566, lng: 2.3522, airport: '샤를드골공항' },
+            newyork: { name: '뉴욕', nameEn: 'New York', country: '미국', lat: 40.7128, lng: -74.0060, airport: 'JFK 국제공항' },
+            rome: { name: '로마', nameEn: 'Rome', country: '이탈리아', lat: 41.9028, lng: 12.4964, airport: '피우미치노공항' },
+            barcelona: { name: '바르셀로나', nameEn: 'Barcelona', country: '스페인', lat: 41.3851, lng: 2.1734, airport: '엘프라트공항' },
+            sydney: { name: '시드니', nameEn: 'Sydney', country: '호주', lat: -33.8688, lng: 151.2093, airport: '시드니 킹스포드 스미스 공항' },
+            dubai: { name: '두바이', nameEn: 'Dubai', country: 'UAE', lat: 25.2048, lng: 55.2708, airport: '두바이국제공항' }
+        };
+
+        // 현재 선택된 여행
+        let currentTrip = {
+            origin: 'seoul',
+            destination: 'london'
+        };
+
+        // 항공편 데이터 생성 함수
+        function generateFlightData(origin, destination) {
+            const originCity = cities[origin];
+            const destCity = cities[destination];
+
+            // 거리 기반 대략적인 비용 및 시간 계산
+            const latDiff = Math.abs(originCity.lat - destCity.lat);
+            const lngDiff = Math.abs(originCity.lng - destCity.lng);
+            const distance = Math.sqrt(latDiff * latDiff + lngDiff * lngDiff) * 111; // km로 변환
+
+            const basePrice = Math.floor(distance * 100 + Math.random() * 200000);
+            const flightHours = Math.floor(distance / 800 * 60); // 시간(분)
+
+            return [
+                {
+                    id: 1,
+                    name: 'Korean Air',
+                    icon: '✈️',
+                    price: basePrice + 100000,
+                    priceStr: '₩' + (basePrice + 100000).toLocaleString(),
+                    duration: `${Math.floor(flightHours/60)}시간 ${flightHours%60}분`,
+                    durationMin: flightHours,
+                    details: `${originCity.airport} → ${destCity.airport} 직항`,
+                    cancelled: true,
+                    cancelReason: '좌석 취소 발생 - 즉시 예약 가능!'
+                },
+                {
+                    id: 2,
+                    name: 'Asiana Airlines',
+                    icon: '✈️',
+                    price: basePrice - 50000,
+                    priceStr: '₩' + (basePrice - 50000).toLocaleString(),
+                    duration: `${Math.floor((flightHours+30)/60)}시간 ${(flightHours+30)%60}분`,
+                    durationMin: flightHours + 30,
+                    details: `${originCity.airport} → ${destCity.airport} 직항`,
+                    cancelled: false
+                },
+                {
+                    id: 3,
+                    name: 'Emirates',
+                    icon: '✈️',
+                    price: Math.floor(basePrice * 0.8),
+                    priceStr: '₩' + Math.floor(basePrice * 0.8).toLocaleString(),
+                    duration: `${Math.floor((flightHours+180)/60)}시간 ${(flightHours+180)%60}분`,
+                    durationMin: flightHours + 180,
+                    details: `${originCity.airport} → ${destCity.airport} (두바이 경유)`,
+                    cancelled: false
+                },
+                {
+                    id: 4,
+                    name: 'Turkish Airlines',
+                    icon: '✈️',
+                    price: Math.floor(basePrice * 0.75),
+                    priceStr: '₩' + Math.floor(basePrice * 0.75).toLocaleString(),
+                    duration: `${Math.floor((flightHours+200)/60)}시간 ${(flightHours+200)%60}분`,
+                    durationMin: flightHours + 200,
+                    details: `${originCity.airport} → ${destCity.airport} (이스탄불 경유)`,
+                    cancelled: false
+                }
+            ];
+        }
+
+        // 항공편 데이터 (동적 생성)
+        let flightsData = generateFlightData('seoul', 'london');
 
         // 국제 기차 데이터
         const trainsData = [
@@ -867,12 +937,42 @@
             const origin = document.getElementById('origin').value;
             const destination = document.getElementById('destination').value;
 
-            if (origin && destination) {
-                document.getElementById('mapRoute').textContent = `${origin} → ${destination}`;
-                alert(`${origin}에서 ${destination}까지의 여행 계획이 업데이트되었습니다!`);
-            } else {
-                alert('출발지와 목적지를 모두 입력해주세요.');
+            if (origin === destination) {
+                alert('출발지와 목적지가 같을 수 없습니다. 다른 도시를 선택해주세요.');
+                return;
             }
+
+            // 현재 여행 정보 업데이트
+            currentTrip.origin = origin;
+            currentTrip.destination = destination;
+
+            const originCity = cities[origin];
+            const destCity = cities[destination];
+
+            // 지도 경로 텍스트 업데이트
+            document.getElementById('mapRoute').textContent =
+                `${originCity.name} → ${destCity.name}`;
+
+            // 항공편 데이터 재생성
+            flightsData = generateFlightData(origin, destination);
+
+            // 항공편 다시 렌더링
+            const sortedFlights = [...flightsData].sort((a, b) => b.cancelled - a.cancelled);
+            document.getElementById('flightsGrid').innerHTML = sortedFlights.map(renderTransportCard).join('');
+
+            // 총 비용 재계산 및 업데이트
+            const totalCost = calculateTotalCost();
+            document.getElementById('totalCost').textContent = formatCurrency(totalCost);
+
+            // 헤더 제목 업데이트
+            document.querySelector('header h1').textContent =
+                `🌍 ${originCity.name} → ${destCity.name} 여행 플래너`;
+
+            // 현지 교통 섹션 제목 업데이트
+            document.querySelector('.main-content .section:last-of-type h2').textContent =
+                `🚇 ${destCity.name} 현지 교통`;
+
+            console.log(`✈️ 여행 업데이트: ${originCity.name} → ${destCity.name}`);
         }
 
         // ==================== 렌더링 함수 ====================
@@ -937,6 +1037,14 @@
 
         // 페이지 초기화
         function initializePage() {
+            // 초기 여행 정보 설정
+            const originCity = cities[currentTrip.origin];
+            const destCity = cities[currentTrip.destination];
+
+            // 헤더 제목 설정
+            document.querySelector('header h1').textContent =
+                `🌍 ${originCity.name} → ${destCity.name} 여행 플래너`;
+
             // 총 비용 및 시간 표시
             const totalCost = calculateTotalCost();
             const totalTime = calculateTotalTime();
@@ -951,10 +1059,10 @@
             // 국제 기차 렌더링
             document.getElementById('trainsGrid').innerHTML = trainsData.map(renderTransportCard).join('');
 
-            // 런던 지하철 렌더링
+            // 지하철 렌더링
             document.getElementById('tubeGrid').innerHTML = tubeData.map(renderTransportCard).join('');
 
-            // 런던 버스 렌더링
+            // 버스 렌더링
             document.getElementById('busGrid').innerHTML = busData.map(renderTransportCard).join('');
 
             // 택시 렌더링
@@ -962,6 +1070,10 @@
 
             // 7일 일정 렌더링
             document.getElementById('itineraryGrid').innerHTML = itineraryData.map(renderDayCard).join('');
+
+            // 현지 교통 섹션 제목 설정
+            document.querySelector('.main-content .section:last-of-type h2').textContent =
+                `🚇 ${destCity.name} 현지 교통`;
 
             console.log('✈️ 여행 플래너 로딩 완료!');
             console.log(`총 비용: ${formatCurrency(totalCost)}`);
