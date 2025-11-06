@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>시스템 리소스 모니터링 대시보드</title>
+
+    <!-- External CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <!-- Socket.IO -->
+    <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+
+    <!-- jsPDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- jsPDF AutoTable -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 헤더 영역 -->
+    <header class="header">
+        <div class="header-left">
+            <h1><i class="fas fa-chart-line"></i> 시스템 리소스 모니터링</h1>
+        </div>
+
+        <div class="header-center">
+            <!-- 타이머 및 프로그레스 바 -->
+            <div class="timer-container">
+                <div class="timer-display">
+                    <i class="fas fa-clock"></i>
+                    <span id="timerText">00:00 / 05:00</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <!-- 연결 상태 -->
+            <div class="connection-status" id="connectionStatus">
+                <i class="fas fa-circle"></i>
+                <span>연결 대기중</span>
+            </div>
+
+            <!-- 제어 버튼 -->
+            <div class="control-buttons">
+                <button class="btn btn-start" id="startBtn">
+                    <i class="fas fa-play"></i> 시작
+                </button>
+                <button class="btn btn-stop" id="stopBtn" disabled>
+                    <i class="fas fa-stop"></i> 중지
+                </button>
+                <button class="btn btn-pdf" id="pdfBtn" disabled>
+                    <i class="fas fa-file-pdf"></i> PDF 생성
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- 메인 대시보드 그리드 -->
+    <main class="dashboard">
+        <!-- 1행: CPU, 메모리, 디스크 -->
+        <div class="card cpu-card">
+            <div class="card-header">
+                <i class="fas fa-microchip"></i>
+                <h2>CPU</h2>
+            </div>
+            <div class="card-body">
+                <!-- 전체 사용률 숫자 -->
+                <div class="big-number">
+                    <span id="cpuUsage">0</span><span class="unit">%</span>
+                </div>
+                <div class="sub-info">
+                    <span id="cpuBrand">-</span><br>
+                    <i class="fas fa-thermometer-half"></i> <span id="cpuTemp">0</span>°C
+                </div>
+
+                <!-- 실시간 라인 차트 -->
+                <div class="chart-container">
+                    <canvas id="cpuLineChart"></canvas>
+                </div>
+
+                <!-- 코어별 미니 바 차트 -->
+                <div class="cores-container" id="coresContainer">
+                    <h4>코어별 사용률</h4>
+                    <div class="chart-container-small">
+                        <canvas id="cpuCoresChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card memory-card">
+            <div class="card-header">
+                <i class="fas fa-memory"></i>
+                <h2>메모리</h2>
+            </div>
+            <div class="card-body">
+                <!-- 사용률 숫자 -->
+                <div class="big-number">
+                    <span id="memUsage">0</span><span class="unit">%</span>
+                </div>
+                <div class="sub-info">
+                    <span id="memUsed">0</span> GB / <span id="memTotal">0</span> GB
+                </div>
+
+                <!-- 도넛 차트 -->
+                <div class="chart-container-medium">
+                    <canvas id="memDoughnutChart"></canvas>
+                </div>
+
+                <!-- 실시간 라인 차트 -->
+                <div class="chart-container">
+                    <canvas id="memLineChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="card disk-card">
+            <div class="card-header">
+                <i class="fas fa-hard-drive"></i>
+                <h2>디스크</h2>
+            </div>
+            <div class="card-body">
+                <!-- 파티션 정보 -->
+                <div class="disk-info" id="diskInfo">
+                    <p>로딩 중...</p>
+                </div>
+
+                <!-- 파티션별 바 차트 -->
+                <div class="chart-container">
+                    <canvas id="diskBarChart"></canvas>
+                </div>
+
+                <!-- I/O 속도 -->
+                <div class="io-speeds">
+                    <div class="io-item">
+                        <i class="fas fa-arrow-up"></i>
+                        <span>읽기: </span>
+                        <span id="diskReadSpeed">0</span> MB/s
+                    </div>
+                    <div class="io-item">
+                        <i class="fas fa-arrow-down"></i>
+                        <span>쓰기: </span>
+                        <span id="diskWriteSpeed">0</span> MB/s
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2행: 네트워크, GPU -->
+        <div class="card network-card wide">
+            <div class="card-header">
+                <i class="fas fa-network-wired"></i>
+                <h2>네트워크</h2>
+            </div>
+            <div class="card-body">
+                <!-- 송수신 듀얼 라인 차트 -->
+                <div class="chart-container">
+                    <canvas id="networkChart"></canvas>
+                </div>
+
+                <!-- 현재 속도 표시 -->
+                <div class="network-speeds">
+                    <div class="speed-item">
+                        <i class="fas fa-upload"></i>
+                        <span>업로드: </span>
+                        <span id="uploadSpeed">0</span> KB/s
+                    </div>
+                    <div class="speed-item">
+                        <i class="fas fa-download"></i>
+                        <span>다운로드: </span>
+                        <span id="downloadSpeed">0</span> KB/s
+                    </div>
+                    <div class="speed-item">
+                        <i class="fas fa-exchange-alt"></i>
+                        <span>총 전송: </span>
+                        <span id="totalTransfer">0</span> MB
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card gpu-card">
+            <div class="card-header">
+                <i class="fas fa-dice-d6"></i>
+                <h2>GPU</h2>
+            </div>
+            <div class="card-body">
+                <!-- GPU 사용률 -->
+                <div class="big-number">
+                    <span id="gpuUsage">0</span><span class="unit">%</span>
+                </div>
+                <div class="sub-info">
+                    <span id="gpuModel">감지 안됨</span><br>
+                    <i class="fas fa-thermometer-half"></i> <span id="gpuTemp">0</span>°C
+                </div>
+
+                <!-- GPU 게이지 차트 -->
+                <div class="chart-container-medium">
+                    <canvas id="gpuGaugeChart"></canvas>
+                </div>
+
+                <!-- GPU 메모리 -->
+                <div class="gpu-memory">
+                    <p>메모리: <span id="gpuMemUsed">0</span> MB / <span id="gpuMemTotal">0</span> MB</p>
+                    <div class="gpu-mem-bar">
+                        <div class="gpu-mem-fill" id="gpuMemFill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3행: 프로세스 (전체 너비) -->
+        <div class="card process-card full-width">
+            <div class="card-header">
+                <i class="fas fa-tasks"></i>
+                <h2>프로세스</h2>
+            </div>
+            <div class="card-body">
+                <div class="process-tables">
+                    <!-- CPU 상위 프로세스 -->
+                    <div class="process-section">
+                        <h3><i class="fas fa-microchip"></i> CPU 상위 5개</h3>
+                        <table class="process-table">
+                            <thead>
+                                <tr>
+                                    <th>PID</th>
+                                    <th>프로세스명</th>
+                                    <th>CPU %</th>
+                                    <th>메모리 %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topCpuTable">
+                                <tr><td colspan="4">데이터 없음</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- 메모리 상위 프로세스 -->
+                    <div class="process-section">
+                        <h3><i class="fas fa-memory"></i> 메모리 상위 5개</h3>
+                        <table class="process-table">
+                            <thead>
+                                <tr>
+                                    <th>PID</th>
+                                    <th>프로세스명</th>
+                                    <th>CPU %</th>
+                                    <th>메모리 %</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topMemTable">
+                                <tr><td colspan="4">데이터 없음</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 푸터 영역: 시스템 전체 요약 -->
+    <footer class="footer">
+        <div class="summary-bar">
+            <div class="summary-item">
+                <i class="fas fa-microchip"></i>
+                <span>CPU: <strong id="footerCpu">0%</strong></span>
+            </div>
+            <div class="summary-item">
+                <i class="fas fa-memory"></i>
+                <span>메모리: <strong id="footerMem">0%</strong></span>
+            </div>
+            <div class="summary-item">
+                <i class="fas fa-hard-drive"></i>
+                <span>디스크: <strong id="footerDisk">0%</strong></span>
+            </div>
+            <div class="summary-item">
+                <i class="fas fa-network-wired"></i>
+                <span>네트워크: <strong id="footerNetwork">0 KB/s</strong></span>
+            </div>
+            <div class="summary-item">
+                <i class="fas fa-database"></i>
+                <span>데이터: <strong id="footerDataPoints">0</strong> 포인트</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- PDF 생성 모달 -->
+    <div class="modal" id="pdfModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-file-pdf"></i> PDF 리포트 생성</h2>
+            </div>
+            <div class="modal-body">
+                <div class="progress-container">
+                    <div class="progress-text">
+                        <span id="pdfProgressText">준비 중...</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="pdfProgressBar"></div>
+                    </div>
+                    <div class="progress-percent">
+                        <span id="pdfProgressPercent">0%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-close" id="closeModalBtn">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 타이머 완료 알림 모달 -->
+    <div class="modal" id="timerCompleteModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-check-circle"></i> 모니터링 완료</h2>
+            </div>
+            <div class="modal-body">
+                <p>5분 모니터링이 완료되었습니다.</p>
+                <p>PDF 리포트를 생성하시겠습니까?</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-pdf" id="generatePdfBtn">
+                    <i class="fas fa-file-pdf"></i> PDF 생성
+                </button>
+                <button class="btn btn-close" id="closeTimerModalBtn">닫기</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 로딩 스켈레톤 -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-circle-notch fa-spin"></i>
+            <p>시스템 정보 로딩 중...</p>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="app.js"></script>
+    <script src="pdf-generator.js"></script>
+</body>
+</html>
