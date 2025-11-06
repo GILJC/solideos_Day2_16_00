@@ -497,7 +497,8 @@
                 <div class="input-group">
                     <label>📍 출발지</label>
                     <select id="origin" onchange="updateTrip()">
-                        <option value="seoul">🇰🇷 서울 (Seoul)</option>
+                        <option value="seoul">🇰🇷 서울 인천 (Seoul ICN)</option>
+                        <option value="gimpo">🇰🇷 서울 김포 (Seoul GMP)</option>
                         <option value="busan">🇰🇷 부산 (Busan)</option>
                         <option value="jeju">🇰🇷 제주 (Jeju)</option>
                         <option value="tokyo">🇯🇵 도쿄 (Tokyo)</option>
@@ -513,10 +514,16 @@
                         <option value="paris">🇫🇷 파리 (Paris)</option>
                         <option value="newyork">🇺🇸 뉴욕 (New York)</option>
                         <option value="tokyo">🇯🇵 도쿄 (Tokyo)</option>
+                        <option value="osaka">🇯🇵 오사카 (Osaka)</option>
                         <option value="rome">🇮🇹 로마 (Rome)</option>
                         <option value="barcelona">🇪🇸 바르셀로나 (Barcelona)</option>
                         <option value="sydney">🇦🇺 시드니 (Sydney)</option>
                         <option value="dubai">🇦🇪 두바이 (Dubai)</option>
+                        <option value="cebu">🇵🇭 세부 (Cebu)</option>
+                        <option value="moalboal">🇵🇭 모알보알 (Moalboal)</option>
+                        <option value="nhatrang">🇻🇳 나트랑 (Nha Trang)</option>
+                        <option value="danang">🇻🇳 다낭 (Da Nang)</option>
+                        <option value="hochiminh">🇻🇳 호치민 (Ho Chi Minh)</option>
                     </select>
                 </div>
                 <button class="search-btn" onclick="updateTrip()">🔍 여행 계획 보기</button>
@@ -563,12 +570,17 @@
             <section class="section">
                 <h2>✈️ 국제 교통편</h2>
                 <div class="tabs">
-                    <button class="tab active" onclick="switchTab('international-flights')">항공편</button>
+                    <button class="tab active" onclick="switchTab('roundtrip-flights')">왕복 항공편</button>
+                    <button class="tab" onclick="switchTab('oneway-flights')">편도 항공편</button>
                     <button class="tab" onclick="switchTab('international-trains')">국제 기차</button>
                 </div>
 
-                <div id="international-flights" class="tab-content active">
-                    <div class="transport-grid" id="flightsGrid"></div>
+                <div id="roundtrip-flights" class="tab-content active">
+                    <div class="transport-grid" id="roundtripFlightsGrid"></div>
+                </div>
+
+                <div id="oneway-flights" class="tab-content">
+                    <div class="transport-grid" id="onewayFlightsGrid"></div>
                 </div>
 
                 <div id="international-trains" class="tab-content">
@@ -617,7 +629,8 @@
         // 도시 데이터베이스
         const cities = {
             // 출발지
-            seoul: { name: '서울', nameEn: 'Seoul', country: '한국', lat: 37.5665, lng: 126.9780, airport: '인천국제공항' },
+            seoul: { name: '서울(인천)', nameEn: 'Seoul ICN', country: '한국', lat: 37.5665, lng: 126.9780, airport: '인천국제공항' },
+            gimpo: { name: '서울(김포)', nameEn: 'Seoul GMP', country: '한국', lat: 37.5583, lng: 126.7906, airport: '김포국제공항' },
             busan: { name: '부산', nameEn: 'Busan', country: '한국', lat: 35.1796, lng: 129.0756, airport: '김해국제공항' },
             jeju: { name: '제주', nameEn: 'Jeju', country: '한국', lat: 33.4996, lng: 126.5312, airport: '제주국제공항' },
             tokyo: { name: '도쿄', nameEn: 'Tokyo', country: '일본', lat: 35.6762, lng: 139.6503, airport: '나리타국제공항' },
@@ -631,7 +644,13 @@
             rome: { name: '로마', nameEn: 'Rome', country: '이탈리아', lat: 41.9028, lng: 12.4964, airport: '피우미치노공항' },
             barcelona: { name: '바르셀로나', nameEn: 'Barcelona', country: '스페인', lat: 41.3851, lng: 2.1734, airport: '엘프라트공항' },
             sydney: { name: '시드니', nameEn: 'Sydney', country: '호주', lat: -33.8688, lng: 151.2093, airport: '시드니 킹스포드 스미스 공항' },
-            dubai: { name: '두바이', nameEn: 'Dubai', country: 'UAE', lat: 25.2048, lng: 55.2708, airport: '두바이국제공항' }
+            dubai: { name: '두바이', nameEn: 'Dubai', country: 'UAE', lat: 25.2048, lng: 55.2708, airport: '두바이국제공항' },
+            // 동남아시아 목적지
+            cebu: { name: '세부', nameEn: 'Cebu', country: '필리핀', lat: 10.3157, lng: 123.8854, airport: '막탄-세부 국제공항' },
+            moalboal: { name: '모알보알', nameEn: 'Moalboal', country: '필리핀', lat: 9.9469, lng: 123.3931, airport: '막탄-세부 국제공항 (세부 경유)' },
+            nhatrang: { name: '나트랑', nameEn: 'Nha Trang', country: '베트남', lat: 12.2388, lng: 109.1967, airport: '깜라인 국제공항' },
+            danang: { name: '다낭', nameEn: 'Da Nang', country: '베트남', lat: 16.0544, lng: 108.2022, airport: '다낭 국제공항' },
+            hochiminh: { name: '호치민', nameEn: 'Ho Chi Minh', country: '베트남', lat: 10.8231, lng: 106.6297, airport: '떤선녓 국제공항' }
         };
 
         // 현재 선택된 여행
@@ -640,8 +659,8 @@
             destination: 'london'
         };
 
-        // 항공편 데이터 생성 함수
-        function generateFlightData(origin, destination) {
+        // 편도 항공편 데이터 생성 함수
+        function generateOnewayFlightData(origin, destination) {
             const originCity = cities[origin];
             const destCity = cities[destination];
 
@@ -664,7 +683,8 @@
                     durationMin: flightHours,
                     details: `${originCity.airport} → ${destCity.airport} 직항`,
                     cancelled: true,
-                    cancelReason: '좌석 취소 발생 - 즉시 예약 가능!'
+                    cancelReason: '좌석 취소 발생 - 즉시 예약 가능!',
+                    tripType: '편도'
                 },
                 {
                     id: 2,
@@ -675,35 +695,120 @@
                     duration: `${Math.floor((flightHours+30)/60)}시간 ${(flightHours+30)%60}분`,
                     durationMin: flightHours + 30,
                     details: `${originCity.airport} → ${destCity.airport} 직항`,
-                    cancelled: false
+                    cancelled: false,
+                    tripType: '편도'
                 },
                 {
                     id: 3,
-                    name: 'Emirates',
+                    name: 'Jeju Air',
                     icon: '✈️',
-                    price: Math.floor(basePrice * 0.8),
-                    priceStr: '₩' + Math.floor(basePrice * 0.8).toLocaleString(),
-                    duration: `${Math.floor((flightHours+180)/60)}시간 ${(flightHours+180)%60}분`,
-                    durationMin: flightHours + 180,
-                    details: `${originCity.airport} → ${destCity.airport} (두바이 경유)`,
-                    cancelled: false
+                    price: Math.floor(basePrice * 0.7),
+                    priceStr: '₩' + Math.floor(basePrice * 0.7).toLocaleString(),
+                    duration: `${Math.floor((flightHours+45)/60)}시간 ${(flightHours+45)%60}분`,
+                    durationMin: flightHours + 45,
+                    details: `${originCity.airport} → ${destCity.airport} 직항`,
+                    cancelled: false,
+                    tripType: '편도'
                 },
                 {
                     id: 4,
-                    name: 'Turkish Airlines',
+                    name: 'Air Seoul',
                     icon: '✈️',
-                    price: Math.floor(basePrice * 0.75),
-                    priceStr: '₩' + Math.floor(basePrice * 0.75).toLocaleString(),
-                    duration: `${Math.floor((flightHours+200)/60)}시간 ${(flightHours+200)%60}분`,
-                    durationMin: flightHours + 200,
-                    details: `${originCity.airport} → ${destCity.airport} (이스탄불 경유)`,
-                    cancelled: false
+                    price: Math.floor(basePrice * 0.65),
+                    priceStr: '₩' + Math.floor(basePrice * 0.65).toLocaleString(),
+                    duration: `${Math.floor((flightHours+60)/60)}시간 ${(flightHours+60)%60}분`,
+                    durationMin: flightHours + 60,
+                    details: `${originCity.airport} → ${destCity.airport} 직항`,
+                    cancelled: false,
+                    tripType: '편도'
+                }
+            ];
+        }
+
+        // 왕복 항공편 데이터 생성 함수
+        function generateRoundtripFlightData(origin, destination) {
+            const originCity = cities[origin];
+            const destCity = cities[destination];
+
+            // 거리 기반 대략적인 비용 및 시간 계산
+            const latDiff = Math.abs(originCity.lat - destCity.lat);
+            const lngDiff = Math.abs(originCity.lng - destCity.lng);
+            const distance = Math.sqrt(latDiff * latDiff + lngDiff * lngDiff) * 111; // km로 변환
+
+            const basePrice = Math.floor(distance * 100 + Math.random() * 200000);
+            const flightHours = Math.floor(distance / 800 * 60); // 시간(분)
+
+            // 왕복은 편도 가격의 1.8배 (할인 적용)
+            const roundtripMultiplier = 1.8;
+
+            return [
+                {
+                    id: 1,
+                    name: 'Korean Air',
+                    icon: '✈️',
+                    price: Math.floor((basePrice + 100000) * roundtripMultiplier),
+                    priceStr: '₩' + Math.floor((basePrice + 100000) * roundtripMultiplier).toLocaleString(),
+                    duration: `${Math.floor(flightHours/60)}시간 ${flightHours%60}분 (편도)`,
+                    durationMin: flightHours,
+                    details: `왕복 | ${originCity.airport} ⇄ ${destCity.airport} 직항`,
+                    cancelled: true,
+                    cancelReason: '왕복 특가! 좌석 취소 발생',
+                    tripType: '왕복'
+                },
+                {
+                    id: 2,
+                    name: 'Asiana Airlines',
+                    icon: '✈️',
+                    price: Math.floor((basePrice - 50000) * roundtripMultiplier),
+                    priceStr: '₩' + Math.floor((basePrice - 50000) * roundtripMultiplier).toLocaleString(),
+                    duration: `${Math.floor((flightHours+30)/60)}시간 ${(flightHours+30)%60}분 (편도)`,
+                    durationMin: flightHours + 30,
+                    details: `왕복 | ${originCity.airport} ⇄ ${destCity.airport} 직항`,
+                    cancelled: false,
+                    tripType: '왕복'
+                },
+                {
+                    id: 3,
+                    name: 'Jeju Air',
+                    icon: '✈️',
+                    price: Math.floor(basePrice * 0.7 * roundtripMultiplier),
+                    priceStr: '₩' + Math.floor(basePrice * 0.7 * roundtripMultiplier).toLocaleString(),
+                    duration: `${Math.floor((flightHours+45)/60)}시간 ${(flightHours+45)%60}분 (편도)`,
+                    durationMin: flightHours + 45,
+                    details: `왕복 | ${originCity.airport} ⇄ ${destCity.airport} 직항`,
+                    cancelled: false,
+                    tripType: '왕복'
+                },
+                {
+                    id: 4,
+                    name: 'Air Seoul',
+                    icon: '✈️',
+                    price: Math.floor(basePrice * 0.65 * roundtripMultiplier),
+                    priceStr: '₩' + Math.floor(basePrice * 0.65 * roundtripMultiplier).toLocaleString(),
+                    duration: `${Math.floor((flightHours+60)/60)}시간 ${(flightHours+60)%60}분 (편도)`,
+                    durationMin: flightHours + 60,
+                    details: `왕복 | ${originCity.airport} ⇄ ${destCity.airport} 직항`,
+                    cancelled: false,
+                    tripType: '왕복'
+                },
+                {
+                    id: 5,
+                    name: 'T\'way Air',
+                    icon: '✈️',
+                    price: Math.floor(basePrice * 0.6 * roundtripMultiplier),
+                    priceStr: '₩' + Math.floor(basePrice * 0.6 * roundtripMultiplier).toLocaleString(),
+                    duration: `${Math.floor((flightHours+75)/60)}시간 ${(flightHours+75)%60}분 (편도)`,
+                    durationMin: flightHours + 75,
+                    details: `왕복 | ${originCity.airport} ⇄ ${destCity.airport} 직항`,
+                    cancelled: false,
+                    tripType: '왕복'
                 }
             ];
         }
 
         // 항공편 데이터 (동적 생성)
-        let flightsData = generateFlightData('seoul', 'london');
+        let onewayFlightsData = generateOnewayFlightData('seoul', 'london');
+        let roundtripFlightsData = generateRoundtripFlightData('seoul', 'london');
 
         // 국제 기차 데이터
         const trainsData = [
@@ -873,8 +978,10 @@
         function calculateTotalCost() {
             let total = 0;
 
-            // 항공권 (왕복)
-            total += flightsData[0].price * 2;
+            // 항공권 (왕복 - 첫 번째 옵션)
+            if (roundtripFlightsData && roundtripFlightsData.length > 0) {
+                total += roundtripFlightsData[0].price;
+            }
 
             // 7일 일정 비용
             itineraryData.forEach(day => {
@@ -954,11 +1061,16 @@
                 `${originCity.name} → ${destCity.name}`;
 
             // 항공편 데이터 재생성
-            flightsData = generateFlightData(origin, destination);
+            onewayFlightsData = generateOnewayFlightData(origin, destination);
+            roundtripFlightsData = generateRoundtripFlightData(origin, destination);
 
-            // 항공편 다시 렌더링
-            const sortedFlights = [...flightsData].sort((a, b) => b.cancelled - a.cancelled);
-            document.getElementById('flightsGrid').innerHTML = sortedFlights.map(renderTransportCard).join('');
+            // 항공편 다시 렌더링 (왕복)
+            const sortedRoundtrip = [...roundtripFlightsData].sort((a, b) => b.cancelled - a.cancelled);
+            document.getElementById('roundtripFlightsGrid').innerHTML = sortedRoundtrip.map(renderTransportCard).join('');
+
+            // 항공편 다시 렌더링 (편도)
+            const sortedOneway = [...onewayFlightsData].sort((a, b) => b.cancelled - a.cancelled);
+            document.getElementById('onewayFlightsGrid').innerHTML = sortedOneway.map(renderTransportCard).join('');
 
             // 총 비용 재계산 및 업데이트
             const totalCost = calculateTotalCost();
@@ -1052,9 +1164,13 @@
             document.getElementById('totalCost').textContent = formatCurrency(totalCost);
             document.getElementById('totalTime').textContent = totalTime;
 
-            // 항공편 렌더링 (취소표 우선)
-            const sortedFlights = [...flightsData].sort((a, b) => b.cancelled - a.cancelled);
-            document.getElementById('flightsGrid').innerHTML = sortedFlights.map(renderTransportCard).join('');
+            // 왕복 항공편 렌더링 (취소표 우선)
+            const sortedRoundtrip = [...roundtripFlightsData].sort((a, b) => b.cancelled - a.cancelled);
+            document.getElementById('roundtripFlightsGrid').innerHTML = sortedRoundtrip.map(renderTransportCard).join('');
+
+            // 편도 항공편 렌더링 (취소표 우선)
+            const sortedOneway = [...onewayFlightsData].sort((a, b) => b.cancelled - a.cancelled);
+            document.getElementById('onewayFlightsGrid').innerHTML = sortedOneway.map(renderTransportCard).join('');
 
             // 국제 기차 렌더링
             document.getElementById('trainsGrid').innerHTML = trainsData.map(renderTransportCard).join('');
