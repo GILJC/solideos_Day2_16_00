@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>서울 → 런던 7일 여행 플래너</title>
+    <title>맞춤형 여행 플래너</title>
 
     <style>
         /* 기본 리셋 및 전역 스타일 */
@@ -36,7 +36,6 @@
             padding: 20px;
         }
 
-        /* 컨테이너 */
         .container {
             max-width: 1400px;
             margin: 0 auto;
@@ -85,20 +84,70 @@
         h1 {
             font-size: 2.5rem;
             font-weight: 700;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
             position: relative;
             z-index: 1;
         }
 
-        .subtitle {
-            font-size: 1.1rem;
+        /* 여행지 입력 폼 */
+        .trip-form {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 15px;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
             opacity: 0.9;
-            position: relative;
-            z-index: 1;
         }
 
-        /* 여행 정보 섹션 */
-        .trip-info {
+        .input-group input {
+            padding: 12px 15px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            font-size: 1rem;
+            background: rgba(255,255,255,0.9);
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: var(--white);
+            background: var(--white);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .search-btn {
+            align-self: flex-end;
+            padding: 12px 30px;
+            background: var(--accent-color);
+            color: var(--text-dark);
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        .search-btn:hover {
+            background: #FFB300;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        /* 여행 정보 요약 */
+        .trip-summary {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
@@ -107,7 +156,7 @@
             border-bottom: 1px solid #e0e0e0;
         }
 
-        .info-card {
+        .summary-card {
             background: var(--white);
             padding: 20px;
             border-radius: 12px;
@@ -115,50 +164,35 @@
             transition: transform 0.3s, box-shadow 0.3s;
         }
 
-        .info-card:hover {
+        .summary-card:hover {
             transform: translateY(-5px);
             box-shadow: var(--shadow-hover);
         }
 
-        .info-card h3 {
-            font-size: 0.9rem;
+        .summary-card h3 {
+            font-size: 0.85rem;
             color: var(--text-light);
             margin-bottom: 8px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .info-card p {
-            font-size: 1.3rem;
-            font-weight: 600;
-            color: var(--text-dark);
+        .summary-card .value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
         }
 
-        /* 메인 콘텐츠 영역 */
+        /* 메인 콘텐츠 */
         .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
             padding: 40px;
         }
 
-        /* 지도 섹션 */
-        .map-section {
-            grid-column: 1 / -1;
-        }
-
-        #map {
-            width: 100%;
-            height: 500px;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-        }
-
-        /* 섹션 스타일 */
         .section {
             background: var(--white);
             border-radius: 12px;
             padding: 25px;
+            margin-bottom: 30px;
             box-shadow: var(--shadow);
         }
 
@@ -173,13 +207,101 @@
             padding-bottom: 10px;
         }
 
-        /* 교통 정보 카드 */
-        .transport-grid {
+        /* 지도 */
+        #map {
+            width: 100%;
+            height: 400px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            background: var(--bg-light);
+        }
+
+        /* 7일 일정표 */
+        .itinerary {
+            display: grid;
+            gap: 20px;
+        }
+
+        .day-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+
+        .day-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .day-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .day-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .day-cost {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--danger-color);
+        }
+
+        .timeline {
             display: grid;
             gap: 15px;
-            max-height: 600px;
-            overflow-y: auto;
-            padding-right: 10px;
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: 80px 1fr;
+            gap: 15px;
+            padding: 15px;
+            background: var(--bg-light);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .timeline-item.meal {
+            border-left-color: var(--accent-color);
+        }
+
+        .time {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+        }
+
+        .activity-details h4 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+        }
+
+        .activity-details p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 3px;
+        }
+
+        .activity-details .cost {
+            color: var(--danger-color);
+            font-weight: 600;
+        }
+
+        /* 교통 정보 */
+        .transport-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
         }
 
         .transport-card {
@@ -188,13 +310,12 @@
             padding: 20px;
             transition: all 0.3s;
             cursor: pointer;
-            position: relative;
         }
 
         .transport-card:hover {
             border-color: var(--primary-color);
             box-shadow: var(--shadow-hover);
-            transform: translateX(5px);
+            transform: translateY(-5px);
         }
 
         .transport-card.cancelled {
@@ -203,15 +324,14 @@
         }
 
         .cancelled-badge {
-            position: absolute;
-            top: 10px;
-            right: 10px;
+            display: inline-block;
             background: var(--danger-color);
             color: var(--white);
             padding: 5px 15px;
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 600;
+            margin-bottom: 10px;
             animation: pulse 2s infinite;
         }
 
@@ -220,113 +340,30 @@
             50% { transform: scale(1.05); }
         }
 
-        .transport-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .transport-type {
-            font-size: 1.8rem;
-            margin-right: 10px;
+        .transport-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
         }
 
         .transport-name {
             font-weight: 600;
             font-size: 1.1rem;
+            margin-bottom: 10px;
             color: var(--text-dark);
         }
 
         .transport-price {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-weight: 700;
             color: var(--primary-color);
+            margin-bottom: 15px;
         }
 
         .transport-details {
             display: grid;
-            gap: 8px;
-            margin-top: 10px;
-        }
-
-        .detail-row {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.9rem;
-            color: var(--text-light);
-        }
-
-        .detail-row strong {
-            color: var(--text-dark);
-        }
-
-        /* 추천 장소 그리드 */
-        .recommendations-grid {
-            display: grid;
-            gap: 15px;
-            max-height: 600px;
-            overflow-y: auto;
-            padding-right: 10px;
-        }
-
-        .recommendation-card {
-            border: 1px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 20px;
-            transition: all 0.3s;
-            cursor: pointer;
-        }
-
-        .recommendation-card:hover {
-            border-color: var(--primary-color);
-            box-shadow: var(--shadow-hover);
-            transform: scale(1.02);
-        }
-
-        .rec-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: start;
-            margin-bottom: 10px;
-        }
-
-        .rec-title {
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: var(--text-dark);
-            margin-bottom: 5px;
-        }
-
-        .rec-rating {
-            background: var(--accent-color);
-            color: var(--text-dark);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            white-space: nowrap;
-        }
-
-        .rec-category {
-            color: var(--text-light);
-            font-size: 0.85rem;
-            margin-bottom: 8px;
-        }
-
-        .rec-description {
-            color: var(--text-light);
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-bottom: 10px;
-        }
-
-        .rec-location {
-            font-size: 0.85rem;
-            color: var(--primary-color);
-            display: flex;
-            align-items: center;
             gap: 5px;
+            font-size: 0.9rem;
+            color: var(--text-light);
         }
 
         /* 탭 시스템 */
@@ -335,6 +372,7 @@
             gap: 10px;
             margin-bottom: 20px;
             border-bottom: 2px solid #e0e0e0;
+            flex-wrap: wrap;
         }
 
         .tab {
@@ -362,14 +400,14 @@
 
         .tab-content {
             display: none;
-            animation: fadeIn 0.3s;
         }
 
         .tab-content.active {
             display: block;
+            animation: fadeIn 0.3s;
         }
 
-        /* 스크롤바 스타일 */
+        /* 스크롤바 */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -384,31 +422,6 @@
             border-radius: 4px;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: #1976D2;
-        }
-
-        /* 로딩 스피너 */
-        .loading {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid var(--bg-light);
-            border-top-color: var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
         /* 푸터 */
         footer {
             background: var(--text-dark);
@@ -418,13 +431,7 @@
             font-size: 0.9rem;
         }
 
-        /* 반응형 디자인 */
-        @media (max-width: 1200px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-        }
-
+        /* 반응형 */
         @media (max-width: 768px) {
             body {
                 padding: 10px;
@@ -438,637 +445,433 @@
                 font-size: 1.8rem;
             }
 
-            .subtitle {
-                font-size: 0.95rem;
+            .trip-form {
+                grid-template-columns: 1fr;
             }
 
-            .trip-info {
+            .trip-summary {
                 grid-template-columns: repeat(2, 1fr);
                 padding: 20px;
-                gap: 15px;
             }
 
             .main-content {
                 padding: 20px;
-                gap: 20px;
             }
 
-            #map {
-                height: 350px;
-            }
-
-            .section {
-                padding: 15px;
+            .transport-grid {
+                grid-template-columns: 1fr;
             }
 
             .tabs {
                 overflow-x: auto;
-                scrollbar-width: none;
-            }
-
-            .tabs::-webkit-scrollbar {
-                display: none;
-            }
-
-            .tab {
-                font-size: 0.9rem;
-                padding: 10px 15px;
             }
         }
 
         @media (max-width: 480px) {
-            .trip-info {
+            .trip-summary {
                 grid-template-columns: 1fr;
             }
-
-            h1 {
-                font-size: 1.5rem;
-            }
-
-            .info-card p {
-                font-size: 1.1rem;
-            }
-        }
-
-        /* 배지 스타일 */
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            margin-left: 8px;
-        }
-
-        .badge-new {
-            background: var(--success-color);
-            color: var(--white);
-        }
-
-        .badge-hot {
-            background: var(--danger-color);
-            color: var(--white);
-        }
-
-        /* API 키 입력 모달 */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        .modal-content {
-            background: var(--white);
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 500px;
-            width: 90%;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
-        }
-
-        .modal-content h2 {
-            margin-bottom: 15px;
-        }
-
-        .modal-content input {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 1rem;
-            margin-bottom: 15px;
-        }
-
-        .modal-content button {
-            width: 100%;
-            padding: 12px;
-            background: var(--primary-color);
-            color: var(--white);
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s;
-        }
-
-        .modal-content button:hover {
-            background: #1976D2;
-        }
-
-        .skip-button {
-            background: var(--text-light) !important;
-            margin-top: 10px;
-        }
-
-        .skip-button:hover {
-            background: var(--text-dark) !important;
         }
     </style>
 </head>
 <body>
-    <!-- API 키 입력 모달 -->
-    <div id="apiModal" class="modal">
-        <div class="modal-content">
-            <h2>Google Maps API 키 설정</h2>
-            <p style="color: var(--text-light); margin-bottom: 15px;">
-                지도를 사용하려면 Google Maps API 키를 입력하세요.
-                <a href="https://developers.google.com/maps/documentation/javascript/get-api-key" target="_blank">API 키 받기</a>
-            </p>
-            <input type="text" id="apiKeyInput" placeholder="AIzaSy...">
-            <button onclick="saveApiKey()">저장하고 시작하기</button>
-            <button class="skip-button" onclick="skipApiKey()">건너뛰기 (데모 모드)</button>
-        </div>
-    </div>
-
     <div class="container">
         <!-- 헤더 -->
         <header>
-            <h1>✈️ 서울 → 런던 7일 여행 플래너</h1>
-            <p class="subtitle">완벽한 여행을 위한 모든 정보를 한 곳에서</p>
+            <h1>🌍 맞춤형 여행 플래너</h1>
+
+            <!-- 여행지 입력 폼 -->
+            <div class="trip-form">
+                <div class="input-group">
+                    <label>📍 출발지</label>
+                    <input type="text" id="origin" placeholder="예: 서울" value="서울">
+                </div>
+                <div class="input-group">
+                    <label>📍 목적지</label>
+                    <input type="text" id="destination" placeholder="예: 런던" value="런던">
+                </div>
+                <button class="search-btn" onclick="updateTrip()">🔍 여행 계획 보기</button>
+            </div>
         </header>
 
-        <!-- 여행 정보 -->
-        <section class="trip-info">
-            <div class="info-card">
-                <h3>출발지</h3>
-                <p>🏢 서울 시청</p>
+        <!-- 여행 정보 요약 -->
+        <section class="trip-summary">
+            <div class="summary-card">
+                <h3>총 여행 비용</h3>
+                <div class="value" id="totalCost">계산 중...</div>
             </div>
-            <div class="info-card">
-                <h3>목적지</h3>
-                <p>🏛️ 대영박물관</p>
+            <div class="summary-card">
+                <h3>총 소요 시간</h3>
+                <div class="value" id="totalTime">계산 중...</div>
             </div>
-            <div class="info-card">
-                <h3>출발 시간</h3>
-                <p>🕐 오전 8:00</p>
-            </div>
-            <div class="info-card">
+            <div class="summary-card">
                 <h3>여행 기간</h3>
-                <p>📅 7일</p>
+                <div class="value">7일</div>
             </div>
-            <div class="info-card">
-                <h3>예상 도착</h3>
-                <p id="arrivalTime">계산 중...</p>
-            </div>
-            <div class="info-card">
-                <h3>총 거리</h3>
-                <p id="totalDistance">약 9,000 km</p>
+            <div class="summary-card">
+                <h3>방문 장소</h3>
+                <div class="value">10곳</div>
             </div>
         </section>
 
         <!-- 메인 콘텐츠 -->
         <div class="main-content">
             <!-- 지도 섹션 -->
-            <section class="map-section section">
+            <section class="section">
                 <h2>🗺️ 여행 경로</h2>
-                <div id="map"></div>
+                <div id="map">
+                    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; background: var(--bg-light);">
+                        <div style="font-size: 4rem; margin-bottom: 20px;">🗺️</div>
+                        <h3 style="margin-bottom: 10px; color: var(--text-dark);">지도 미리보기</h3>
+                        <p style="color: var(--text-light); text-align: center;">
+                            <span id="mapRoute">서울 → 런던</span> 경로
+                        </p>
+                    </div>
+                </div>
             </section>
 
-            <!-- 교통 정보 섹션 -->
+            <!-- 국제 교통 섹션 -->
             <section class="section">
-                <h2>🚌 교통 정보</h2>
+                <h2>✈️ 국제 교통편</h2>
                 <div class="tabs">
-                    <button class="tab active" onclick="switchTab('flights')">항공편</button>
-                    <button class="tab" onclick="switchTab('trains')">기차</button>
-                    <button class="tab" onclick="switchTab('buses')">버스</button>
+                    <button class="tab active" onclick="switchTab('international-flights')">항공편</button>
+                    <button class="tab" onclick="switchTab('international-trains')">국제 기차</button>
                 </div>
 
-                <div id="flights" class="tab-content active">
+                <div id="international-flights" class="tab-content active">
                     <div class="transport-grid" id="flightsGrid"></div>
                 </div>
 
-                <div id="trains" class="tab-content">
+                <div id="international-trains" class="tab-content">
                     <div class="transport-grid" id="trainsGrid"></div>
-                </div>
-
-                <div id="buses" class="tab-content">
-                    <div class="transport-grid" id="busesGrid"></div>
                 </div>
             </section>
 
-            <!-- 추천 장소 섹션 -->
+            <!-- 7일 일정표 -->
             <section class="section">
-                <h2>⭐ 런던 추천</h2>
+                <h2>📅 7일 여행 일정 (시간별)</h2>
+                <div class="itinerary" id="itineraryGrid"></div>
+            </section>
+
+            <!-- 런던 현지 교통 -->
+            <section class="section">
+                <h2>🚇 런던 현지 교통</h2>
                 <div class="tabs">
-                    <button class="tab active" onclick="switchTab('attractions')">관광지 TOP 10</button>
-                    <button class="tab" onclick="switchTab('restaurants')">맛집</button>
+                    <button class="tab active" onclick="switchTab('local-tube')">지하철 (Tube)</button>
+                    <button class="tab" onclick="switchTab('local-bus')">버스</button>
+                    <button class="tab" onclick="switchTab('local-taxi')">택시/우버</button>
                 </div>
 
-                <div id="attractions" class="tab-content active">
-                    <div class="recommendations-grid" id="attractionsGrid"></div>
+                <div id="local-tube" class="tab-content active">
+                    <div class="transport-grid" id="tubeGrid"></div>
                 </div>
 
-                <div id="restaurants" class="tab-content">
-                    <div class="recommendations-grid" id="restaurantsGrid"></div>
+                <div id="local-bus" class="tab-content">
+                    <div class="transport-grid" id="busGrid"></div>
+                </div>
+
+                <div id="local-taxi" class="tab-content">
+                    <div class="transport-grid" id="taxiGrid"></div>
                 </div>
             </section>
         </div>
 
         <!-- 푸터 -->
         <footer>
-            <p>© 2024 서울-런던 여행 플래너 | 모든 정보는 참고용입니다</p>
+            <p>© 2024 맞춤형 여행 플래너 | 모든 정보는 참고용입니다</p>
         </footer>
     </div>
 
     <script>
         // ==================== 데이터 정의 ====================
 
-        // 여행 기본 정보
-        const tripData = {
-            origin: {
-                name: '서울 시청',
-                lat: 37.5663,
-                lng: 126.9779
-            },
-            destination: {
-                name: '대영박물관 (British Museum)',
-                lat: 51.5194,
-                lng: -0.1270
-            },
-            departureTime: '08:00',
-            duration: 7
-        };
-
-        // 항공편 데이터 (취소된 항공권 우선 표시)
+        // 항공편 데이터
         const flightsData = [
             {
                 id: 1,
                 name: 'Korean Air KE907',
-                type: '✈️',
-                price: '850,000원',
+                icon: '✈️',
+                price: 850000,
+                priceStr: '₩850,000',
                 duration: '11시간 30분',
-                departure: '인천국제공항 08:00',
-                arrival: '히드로공항 12:30',
-                stops: '직항',
-                class: '이코노미',
+                durationMin: 690,
+                details: '인천 → 런던 히드로 직항',
                 cancelled: true,
                 cancelReason: '좌석 취소 발생 - 즉시 예약 가능!'
             },
             {
                 id: 2,
                 name: 'British Airways BA17',
-                type: '✈️',
-                price: '920,000원',
+                icon: '✈️',
+                price: 920000,
+                priceStr: '₩920,000',
                 duration: '11시간 45분',
-                departure: '인천국제공항 09:30',
-                arrival: '히드로공항 14:15',
-                stops: '직항',
-                class: '이코노미',
+                durationMin: 705,
+                details: '인천 → 런던 히드로 직항',
                 cancelled: true,
                 cancelReason: '특가 취소석 - 선착순 마감!'
             },
             {
                 id: 3,
-                name: 'Asiana Airlines OZ521',
-                type: '✈️',
-                price: '780,000원',
+                name: 'Asiana OZ521',
+                icon: '✈️',
+                price: 780000,
+                priceStr: '₩780,000',
                 duration: '12시간 20분',
-                departure: '인천국제공항 10:00',
-                arrival: '히드로공항 15:20',
-                stops: '직항',
-                class: '이코노미',
+                durationMin: 740,
+                details: '인천 → 런던 히드로 직항',
                 cancelled: false
             },
             {
                 id: 4,
                 name: 'Turkish Airlines TK091',
-                type: '✈️',
-                price: '650,000원',
+                icon: '✈️',
+                price: 650000,
+                priceStr: '₩650,000',
                 duration: '16시간 40분',
-                departure: '인천국제공항 11:00',
-                arrival: '히드로공항 18:40',
-                stops: '이스탄불 경유 (3시간 대기)',
-                class: '이코노미',
-                cancelled: false
-            },
-            {
-                id: 5,
-                name: 'Emirates EK322',
-                type: '✈️',
-                price: '720,000원',
-                duration: '17시간 10분',
-                departure: '인천국제공항 08:30',
-                arrival: '히드로공항 16:40',
-                stops: '두바이 경유 (4시간 대기)',
-                class: '이코노미',
+                durationMin: 1000,
+                details: '인천 → 이스탄불 → 런던 (경유)',
                 cancelled: false
             }
         ];
 
-        // 기차 데이터
+        // 국제 기차 데이터
         const trainsData = [
             {
                 id: 1,
-                name: 'KTX → 중국횡단철도 → 유럽철도',
-                type: '🚄',
-                price: '1,200,000원',
-                duration: '9일 14시간',
-                departure: '서울역 08:00',
-                arrival: '런던 세인트 판크라스역',
-                stops: '부산, 베이징, 모스크바, 베를린, 파리 경유',
-                class: '일반석',
-                cancelled: false
-            },
-            {
-                id: 2,
-                name: 'Eurostar (파리-런던)',
-                type: '🚄',
-                price: '180,000원',
+                name: 'Eurostar',
+                icon: '🚄',
+                price: 180000,
+                priceStr: '₩180,000',
                 duration: '2시간 20분',
-                departure: '파리 북역 14:00',
-                arrival: '런던 세인트 판크라스역 14:20 (현지시간)',
-                stops: '직통',
-                class: '스탠다드',
-                cancelled: false,
+                durationMin: 140,
+                details: '파리 북역 → 런던 세인트 판크라스',
                 note: '※ 파리까지 별도 이동 필요'
             }
         ];
 
-        // 버스 데이터
-        const busesData = [
+        // 런던 지하철 데이터
+        const tubeData = [
             {
                 id: 1,
-                name: '국제 고속버스 (대륙횡단)',
-                type: '🚌',
-                price: '450,000원',
-                duration: '15일 이상',
-                departure: '서울고속버스터미널',
-                arrival: '런던 빅토리아 코치 스테이션',
-                stops: '중국, 중앙아시아, 러시아, 동유럽 경유',
-                class: '일반석',
-                cancelled: false
+                name: 'Oyster Card (7일 패스)',
+                icon: '🚇',
+                price: 50000,
+                priceStr: '£38 (약 ₩50,000)',
+                duration: '평균 20-30분/구간',
+                details: '런던 전역 Zone 1-2 무제한 이용'
             },
             {
                 id: 2,
-                name: 'National Express',
-                type: '🚌',
-                price: '25,000원',
-                duration: '9시간 30분',
-                departure: '파리 갈리에니 버스터미널',
-                arrival: '런던 빅토리아 코치 스테이션',
-                stops: '프랑스 국내 여러 도시 경유',
-                class: '일반석',
-                cancelled: false,
-                note: '※ 파리까지 별도 이동 필요'
+                name: '단일 구간권',
+                icon: '🚇',
+                price: 3800,
+                priceStr: '£2.90 (약 ₩3,800)',
+                duration: '평균 20-30분',
+                details: 'Zone 1-2 내 단일 구간'
             }
         ];
 
-        // 런던 관광지 TOP 10
-        const attractionsData = [
+        // 런던 버스 데이터
+        const busData = [
             {
                 id: 1,
-                name: '대영박물관 (British Museum)',
-                category: '박물관',
-                rating: '4.7',
-                description: '세계 최대 규모의 박물관 중 하나. 로제타 스톤, 이집트 미라 등 인류 역사의 보물 전시. 입장 무료!',
-                lat: 51.5194,
-                lng: -0.1270,
-                location: 'Great Russell St, London WC1B 3DG'
+                name: '런던 버스 (1일권)',
+                icon: '🚌',
+                price: 7000,
+                priceStr: '£5.25 (약 ₩7,000)',
+                duration: '평균 30-45분/구간',
+                details: '런던 전역 버스 무제한 이용'
             },
             {
                 id: 2,
-                name: '타워 브리지 (Tower Bridge)',
-                category: '랜드마크',
-                rating: '4.6',
-                description: '런던의 상징적인 다리. 빅토리아 시대의 건축미를 자랑하며, 다리 위 전망대에서 템즈강 전경 감상 가능.',
-                lat: 51.5055,
-                lng: -0.0754,
-                location: 'Tower Bridge Rd, London SE1 2UP'
-            },
-            {
-                id: 3,
-                name: '빅벤 & 국회의사당',
-                category: '랜드마크',
-                rating: '4.7',
-                description: '런던의 아이콘. 고딕 양식의 웅장한 건축물과 세계에서 가장 유명한 시계탑.',
-                lat: 51.5007,
-                lng: -0.1246,
-                location: 'Westminster, London SW1A 0AA'
-            },
-            {
-                id: 4,
-                name: '버킹엄 궁전 (Buckingham Palace)',
-                category: '궁전',
-                rating: '4.5',
-                description: '영국 왕실의 공식 거주지. 위병 교대식(Changing of the Guard)은 필수 관람 코스.',
-                lat: 51.5014,
-                lng: -0.1419,
-                location: 'London SW1A 1AA'
-            },
-            {
-                id: 5,
-                name: '런던 아이 (London Eye)',
-                category: '관광 명소',
-                rating: '4.5',
-                description: '유럽 최대의 대관람차. 135m 높이에서 런던 전경을 360도 파노라마로 감상.',
-                lat: 51.5033,
-                lng: -0.1195,
-                location: 'Riverside Building, County Hall, London SE1 7PB'
-            },
-            {
-                id: 6,
-                name: '코벤트 가든 (Covent Garden)',
-                category: '쇼핑/문화',
-                rating: '4.4',
-                description: '거리 공연과 다양한 상점, 레스토랑이 모여있는 활기찬 지역. 쇼핑과 식사를 동시에!',
-                lat: 51.5118,
-                lng: -0.1226,
-                location: 'Covent Garden, London WC2E 8RF'
-            },
-            {
-                id: 7,
-                name: '테이트 모던 (Tate Modern)',
-                category: '미술관',
-                rating: '4.6',
-                description: '현대미술의 메카. 피카소, 달리 등 거장들의 작품부터 현대 설치미술까지. 입장 무료!',
-                lat: 51.5076,
-                lng: -0.0994,
-                location: 'Bankside, London SE1 9TG'
-            },
-            {
-                id: 8,
-                name: '해리포터 스튜디오 투어',
-                category: '테마파크',
-                rating: '4.8',
-                description: '해리포터 팬이라면 필수! 실제 촬영 세트와 소품, 의상을 직접 볼 수 있는 마법 같은 경험.',
-                lat: 51.6903,
-                lng: -0.4180,
-                location: 'Studio Tour Dr, Leavesden, Watford WD25 7LR'
-            },
-            {
-                id: 9,
-                name: '캠든 마켓 (Camden Market)',
-                category: '시장/쇼핑',
-                rating: '4.3',
-                description: '독특한 분위기의 벼룩시장. 빈티지 의류, 수공예품, 세계 각국 음식 등 다양한 볼거리.',
-                lat: 51.5417,
-                lng: -0.1460,
-                location: 'Camden Lock Pl, London NW1 8AF'
-            },
-            {
-                id: 10,
-                name: '하이드 파크 (Hyde Park)',
-                category: '공원',
-                rating: '4.6',
-                description: '런던 중심부의 거대한 녹색 오아시스. 산책, 피크닉, 보트 타기 등 여유로운 시간을 즐기기에 완벽.',
-                lat: 51.5073,
-                lng: -0.1657,
-                location: 'London W2 2UH'
+                name: '런던 버스 (단일)',
+                icon: '🚌',
+                price: 2000,
+                priceStr: '£1.75 (약 ₩2,000)',
+                duration: '평균 30-45분',
+                details: '1회 승차권'
             }
         ];
 
-        // 맛집 추천 (평점 4.0 이상)
-        const restaurantsData = [
+        // 택시 데이터
+        const taxiData = [
             {
                 id: 1,
-                name: 'Dishoom Covent Garden',
-                category: '인도 요리',
-                rating: '4.5',
-                description: '뭄바이 스타일의 정통 인도 요리. 특히 브렉퍼스트 나안 롤과 치킨 루비 카레가 인기 메뉴.',
-                lat: 51.5118,
-                lng: -0.1223,
-                location: '12 Upper St Martin\'s Ln, London WC2H 9FB'
+                name: '블랙캡 (Black Cab)',
+                icon: '🚕',
+                price: 25000,
+                priceStr: '£15-20 (약 ₩20,000-25,000)',
+                duration: '15-30분 (시내 기준)',
+                details: '런던 전통 택시, 기본 요금 + 거리/시간 추가'
             },
             {
                 id: 2,
-                name: 'Honest Burgers',
-                category: '버거',
-                rating: '4.4',
-                description: '영국산 소고기로 만든 육즙 가득한 수제 버거 전문점. 로즈마리 감자튀김도 필수!',
-                lat: 51.5118,
-                lng: -0.1250,
-                location: '75 Charing Cross Rd, London WC2H 0NE'
+                name: 'Uber',
+                icon: '🚗',
+                price: 15000,
+                priceStr: '£10-15 (약 ₩13,000-20,000)',
+                duration: '15-30분 (시내 기준)',
+                details: '앱 기반 차량 공유 서비스'
+            }
+        ];
+
+        // 7일 일정 데이터
+        const itineraryData = [
+            {
+                day: 1,
+                title: 'Day 1 - 도착 및 시내 탐방',
+                activities: [
+                    { time: '08:00', type: 'transport', name: '인천공항 출발', description: 'Korean Air KE907', cost: 850000, duration: 690 },
+                    { time: '12:30', type: 'arrival', name: '런던 히드로공항 도착', description: '입국 수속 및 호텔 체크인', cost: 0, duration: 120 },
+                    { time: '15:00', type: 'meal', name: '점심 - Borough Market', description: '런던 최고의 푸드 마켓에서 다양한 음식 체험', cost: 25000, duration: 90 },
+                    { time: '17:00', type: 'attraction', name: '타워 브리지', description: '런던의 상징적인 다리 방문 및 사진 촬영', cost: 15000, duration: 90 },
+                    { time: '19:00', type: 'meal', name: '저녁 - Flat Iron Square', description: '가성비 좋은 스테이크 저녁', cost: 35000, duration: 90 }
+                ]
             },
             {
-                id: 3,
-                name: 'Sketch',
-                category: '파인 다이닝',
-                rating: '4.6',
-                description: '미슐랭 별 레스토랑. 예술작품 같은 인테리어와 혁신적인 요리로 유명. 핑크 룸 애프터눈 티 추천!',
-                lat: 51.5145,
-                lng: -0.1405,
-                location: '9 Conduit St, London W1S 2XG'
+                day: 2,
+                title: 'Day 2 - 박물관 & 문화 투어',
+                activities: [
+                    { time: '09:00', type: 'meal', name: '아침 - 호텔 조식', description: '호텔에서 여유로운 아침', cost: 15000, duration: 60 },
+                    { time: '10:30', type: 'attraction', name: '대영박물관', description: '세계 최대 박물관 관람 (입장 무료)', cost: 0, duration: 180 },
+                    { time: '14:00', type: 'meal', name: '점심 - Dishoom', description: '뭄바이 스타일 인도 요리', cost: 30000, duration: 90 },
+                    { time: '16:00', type: 'attraction', name: '코벤트 가든', description: '쇼핑 및 거리 공연 관람', cost: 50000, duration: 120 },
+                    { time: '19:00', type: 'meal', name: '저녁 - Padella', description: '수제 파스타 레스토랑', cost: 28000, duration: 90 }
+                ]
             },
             {
-                id: 4,
-                name: 'Flat Iron Square',
-                category: '스테이크',
-                rating: '4.3',
-                description: '가성비 최고의 스테이크 전문점. 부드러운 플랫 아이언 스테이크가 단돈 12파운드!',
-                lat: 51.5045,
-                lng: -0.0925,
-                location: '66-68 Southwark St, London SE1 0AS'
+                day: 3,
+                title: 'Day 3 - 왕실 투어',
+                activities: [
+                    { time: '08:30', type: 'meal', name: '아침 - 호텔 조식', description: '호텔에서 아침 식사', cost: 15000, duration: 60 },
+                    { time: '10:00', type: 'attraction', name: '버킹엄 궁전', description: '위병 교대식 관람', cost: 0, duration: 90 },
+                    { time: '12:00', type: 'meal', name: '점심 - Sketch', description: '미슐랭 레스토랑 애프터눈 티', cost: 80000, duration: 120 },
+                    { time: '14:30', type: 'attraction', name: '하이드 파크', description: '런던 최대 공원에서 산책', cost: 0, duration: 120 },
+                    { time: '17:00', type: 'attraction', name: '빅벤 & 국회의사당', description: '런던 아이콘 방문', cost: 0, duration: 90 },
+                    { time: '19:00', type: 'meal', name: '저녁 - Honest Burgers', description: '수제 버거 전문점', cost: 25000, duration: 75 }
+                ]
             },
             {
-                id: 5,
-                name: 'Borough Market',
-                category: '푸드 마켓',
-                rating: '4.7',
-                description: '런던 최고의 식재료 시장. 신선한 치즈, 빵, 해산물부터 세계 각국의 길거리 음식까지!',
-                lat: 51.5055,
-                lng: -0.0909,
-                location: '8 Southwark St, London SE1 1TL'
+                day: 4,
+                title: 'Day 4 - 해리포터 투어',
+                activities: [
+                    { time: '08:00', type: 'meal', name: '아침 - 호텔 조식', description: '호텔에서 아침 식사', cost: 15000, duration: 60 },
+                    { time: '09:30', type: 'attraction', name: '해리포터 스튜디오 투어', description: '촬영 세트와 소품 관람', cost: 70000, duration: 300 },
+                    { time: '15:00', type: 'meal', name: '점심 - 스튜디오 카페', description: '해리포터 테마 레스토랑', cost: 35000, duration: 90 },
+                    { time: '17:00', type: 'attraction', name: '캠든 마켓', description: '빈티지 쇼핑 및 길거리 음식', cost: 40000, duration: 150 },
+                    { time: '20:00', type: 'meal', name: '저녁 - Bao Soho', description: '타이완 찐빵 전문점', cost: 22000, duration: 75 }
+                ]
             },
             {
-                id: 6,
-                name: 'Padella',
-                category: '이탈리안',
-                rating: '4.6',
-                description: '수제 파스타의 성지. 매일 신선하게 만드는 파스타가 인상적. 점심시간 웨이팅 각오!',
-                lat: 51.5051,
-                lng: -0.0907,
-                location: '6 Southwark St, London SE1 1TQ'
+                day: 5,
+                title: 'Day 5 - 현대 예술 & 템즈강',
+                activities: [
+                    { time: '09:30', type: 'meal', name: '아침 - 호텔 조식', description: '호텔에서 아침 식사', cost: 15000, duration: 60 },
+                    { time: '11:00', type: 'attraction', name: '테이트 모던', description: '현대미술관 관람 (입장 무료)', cost: 0, duration: 150 },
+                    { time: '14:00', type: 'meal', name: '점심 - Borough Market', description: '다양한 세계 음식 체험', cost: 28000, duration: 90 },
+                    { time: '16:00', type: 'attraction', name: '런던 아이', description: '대관람차에서 런던 전경 감상', cost: 45000, duration: 60 },
+                    { time: '18:00', type: 'meal', name: '저녁 - Duck & Waffle', description: '40층 높이 레스토랑', cost: 75000, duration: 120 }
+                ]
             },
             {
-                id: 7,
-                name: 'Hoppers',
-                category: '스리랑카 요리',
-                rating: '4.4',
-                description: '런던에서 즐기는 이국적인 스리랑카 요리. 코코넛 팬케이크인 호퍼스(Hoppers)가 시그니처 메뉴.',
-                lat: 51.5138,
-                lng: -0.1308,
-                location: '49 Frith St, London W1D 4SG'
+                day: 6,
+                title: 'Day 6 - 자유 시간 & 쇼핑',
+                activities: [
+                    { time: '10:00', type: 'meal', name: '브런치 - Hoppers', description: '스리랑카 요리 브런치', cost: 30000, duration: 90 },
+                    { time: '12:00', type: 'attraction', name: '옥스포드 스트리트', description: '쇼핑 거리 탐방', cost: 100000, duration: 180 },
+                    { time: '15:30', type: 'meal', name: '오후 티 - 전통 티 하우스', description: '영국식 애프터눈 티', cost: 50000, duration: 90 },
+                    { time: '17:30', type: 'attraction', name: '리젠트 스트리트', description: '명품 쇼핑 및 건축물 감상', cost: 50000, duration: 120 },
+                    { time: '20:00', type: 'meal', name: '저녁 - Barrafina', description: '미슐랭 스타 타파스', cost: 60000, duration: 90 }
+                ]
             },
             {
-                id: 8,
-                name: 'Duck & Waffle',
-                category: '영국식 모던',
-                rating: '4.5',
-                description: '40층 높이의 24시간 영업 레스토랑. 런던 야경과 함께 즐기는 시그니처 덕앤와플 요리.',
-                lat: 51.5151,
-                lng: -0.0797,
-                location: '110 Bishopsgate, London EC2N 4AY'
-            },
-            {
-                id: 9,
-                name: 'Bao Soho',
-                category: '타이완 요리',
-                rating: '4.3',
-                description: '타이완 전통 찐빵(Bao) 전문점. 쫄깃한 빵과 다양한 속재료의 조화가 환상적!',
-                lat: 51.5136,
-                lng: -0.1322,
-                location: '53 Lexington St, London W1F 9AS'
-            },
-            {
-                id: 10,
-                name: 'Barrafina',
-                category: '스페인 타파스',
-                rating: '4.5',
-                description: '미슐랭 스타 타파스 바. 신선한 해산물과 정통 스페인 타파스를 카운터에서 즐기는 특별한 경험.',
-                lat: 51.5142,
-                lng: -0.1273,
-                location: '10 Adelaide St, London WC2N 4HZ'
+                day: 7,
+                title: 'Day 7 - 마지막 날 & 출발',
+                activities: [
+                    { time: '08:00', type: 'meal', name: '아침 - 호텔 조식', description: '호텔에서 마지막 아침', cost: 15000, duration: 60 },
+                    { time: '09:30', type: 'attraction', name: '마지막 기념품 쇼핑', description: '히드로공항 면세점', cost: 80000, duration: 120 },
+                    { time: '12:00', type: 'meal', name: '점심 - 공항 라운지', description: '출발 전 가벼운 식사', cost: 35000, duration: 60 },
+                    { time: '14:00', type: 'transport', name: '런던 히드로공항 출발', description: '귀국 항공편', cost: 0, duration: 700 }
+                ]
             }
         ];
 
         // ==================== 유틸리티 함수 ====================
 
-        // 도착 시간 계산 (평균 비행 시간 기준)
-        function calculateArrivalTime() {
-            const avgFlightHours = 11.5; // 평균 11.5시간
-            const departureHour = 8;
-            const arrivalHour = (departureHour + avgFlightHours) % 24;
-            const localTimeDiff = -9; // 런던은 서울보다 9시간 느림 (겨울 기준)
-            const localArrivalHour = (arrivalHour + localTimeDiff + 24) % 24;
+        // 총 비용 계산
+        function calculateTotalCost() {
+            let total = 0;
 
-            return `약 ${Math.floor(localArrivalHour)}:${((localArrivalHour % 1) * 60).toFixed(0).padStart(2, '0')} (런던 현지시간)`;
-        }
+            // 항공권 (왕복)
+            total += flightsData[0].price * 2;
 
-        // 탭 전환 함수
-        function switchTab(tabId) {
-            // 모든 탭 버튼에서 active 클래스 제거
-            const tabButtons = document.querySelectorAll('.tab');
-            tabButtons.forEach(btn => {
-                if (btn.textContent.includes('항공편') && tabId === 'flights' ||
-                    btn.textContent.includes('기차') && tabId === 'trains' ||
-                    btn.textContent.includes('버스') && tabId === 'buses' ||
-                    btn.textContent.includes('관광지') && tabId === 'attractions' ||
-                    btn.textContent.includes('맛집') && tabId === 'restaurants') {
-                    btn.classList.add('active');
-                } else {
-                    btn.classList.remove('active');
-                }
+            // 7일 일정 비용
+            itineraryData.forEach(day => {
+                day.activities.forEach(activity => {
+                    total += activity.cost;
+                });
             });
 
-            // 모든 탭 콘텐츠 숨기기
-            const tabContents = document.querySelectorAll('.tab-content');
-            tabContents.forEach(content => content.classList.remove('active'));
+            // 현지 교통 (7일 패스)
+            total += tubeData[0].price;
 
-            // 선택된 탭 콘텐츠만 표시
+            return total;
+        }
+
+        // 총 시간 계산
+        function calculateTotalTime() {
+            let totalMinutes = 0;
+
+            itineraryData.forEach(day => {
+                day.activities.forEach(activity => {
+                    totalMinutes += activity.duration || 0;
+                });
+            });
+
+            const hours = Math.floor(totalMinutes / 60);
+            const minutes = totalMinutes % 60;
+
+            return `${hours}시간 ${minutes}분`;
+        }
+
+        // 숫자를 한국 원화 형식으로 변환
+        function formatCurrency(amount) {
+            return '₩' + amount.toLocaleString('ko-KR');
+        }
+
+        // 탭 전환
+        function switchTab(tabId) {
+            // 모든 탭 버튼 비활성화
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // 클릭된 탭 활성화
+            event.target.classList.add('active');
+
+            // 모든 탭 콘텐츠 숨기기
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // 선택된 탭 콘텐츠 표시
             const selectedContent = document.getElementById(tabId);
             if (selectedContent) {
                 selectedContent.classList.add('active');
+            }
+        }
+
+        // 여행 정보 업데이트
+        function updateTrip() {
+            const origin = document.getElementById('origin').value;
+            const destination = document.getElementById('destination').value;
+
+            if (origin && destination) {
+                document.getElementById('mapRoute').textContent = `${origin} → ${destination}`;
+                alert(`${origin}에서 ${destination}까지의 여행 계획이 업데이트되었습니다!`);
+            } else {
+                alert('출발지와 목적지를 모두 입력해주세요.');
             }
         }
 
@@ -1078,288 +881,95 @@
         function renderTransportCard(transport) {
             const cancelledClass = transport.cancelled ? 'transport-card cancelled' : 'transport-card';
             const cancelledBadge = transport.cancelled ?
-                `<div class="cancelled-badge">🔥 취소표</div>` : '';
+                `<div class="cancelled-badge">🔥 ${transport.cancelReason}</div>` : '';
             const note = transport.note ?
-                `<div class="detail-row"><span style="color: var(--danger-color);">${transport.note}</span></div>` : '';
-            const cancelReason = transport.cancelled && transport.cancelReason ?
-                `<div class="detail-row"><span style="color: var(--danger-color); font-weight: 600;">⚡ ${transport.cancelReason}</span></div>` : '';
+                `<div style="color: var(--danger-color); font-size: 0.85rem; margin-top: 10px;">${transport.note}</div>` : '';
 
             return `
                 <div class="${cancelledClass}">
                     ${cancelledBadge}
-                    <div class="transport-header">
-                        <div style="display: flex; align-items: center;">
-                            <span class="transport-type">${transport.type}</span>
-                            <span class="transport-name">${transport.name}</span>
-                        </div>
-                        <div class="transport-price">${transport.price}</div>
-                    </div>
+                    <div class="transport-icon">${transport.icon}</div>
+                    <div class="transport-name">${transport.name}</div>
+                    <div class="transport-price">${transport.priceStr}</div>
                     <div class="transport-details">
-                        ${cancelReason}
-                        <div class="detail-row">
-                            <span><strong>소요시간:</strong> ${transport.duration}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span><strong>출발:</strong> ${transport.departure}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span><strong>도착:</strong> ${transport.arrival}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span><strong>경유:</strong> ${transport.stops}</span>
-                        </div>
-                        <div class="detail-row">
-                            <span><strong>등급:</strong> ${transport.class}</span>
-                        </div>
-                        ${note}
+                        <div>⏱️ ${transport.duration}</div>
+                        <div>📍 ${transport.details}</div>
                     </div>
+                    ${note}
                 </div>
             `;
         }
 
-        // 추천 장소 카드 렌더링
-        function renderRecommendationCard(place, index) {
-            const badge = index < 3 ? '<span class="badge badge-hot">HOT</span>' :
-                         index < 5 ? '<span class="badge badge-new">NEW</span>' : '';
+        // 일정 카드 렌더링
+        function renderDayCard(dayData) {
+            const dayCost = dayData.activities.reduce((sum, activity) => sum + activity.cost, 0);
+
+            const activitiesHTML = dayData.activities.map(activity => {
+                const typeClass = activity.type === 'meal' ? 'timeline-item meal' : 'timeline-item';
+                const icon = activity.type === 'meal' ? '🍽️' :
+                            activity.type === 'transport' ? '✈️' :
+                            activity.type === 'arrival' ? '🛬' : '🏛️';
+
+                return `
+                    <div class="${typeClass}">
+                        <div class="time">${activity.time}</div>
+                        <div class="activity-details">
+                            <h4>${icon} ${activity.name}</h4>
+                            <p>${activity.description}</p>
+                            <p class="cost">비용: ${formatCurrency(activity.cost)} | ⏱️ ${Math.floor(activity.duration / 60)}시간 ${activity.duration % 60}분</p>
+                        </div>
+                    </div>
+                `;
+            }).join('');
 
             return `
-                <div class="recommendation-card" onclick="focusOnMap(${place.lat}, ${place.lng}, '${place.name}')">
-                    <div class="rec-header">
-                        <div>
-                            <div class="rec-title">${index + 1}. ${place.name}${badge}</div>
-                            <div class="rec-category">📍 ${place.category}</div>
-                        </div>
-                        <div class="rec-rating">⭐ ${place.rating}</div>
+                <div class="day-card">
+                    <div class="day-header">
+                        <div class="day-title">📅 ${dayData.title}</div>
+                        <div class="day-cost">일일 비용: ${formatCurrency(dayCost)}</div>
                     </div>
-                    <div class="rec-description">${place.description}</div>
-                    <div class="rec-location">📌 ${place.location}</div>
+                    <div class="timeline">
+                        ${activitiesHTML}
+                    </div>
                 </div>
             `;
         }
 
-        // 데이터 렌더링 초기화
-        function initializeContent() {
-            // 도착 시간 계산 및 표시
-            document.getElementById('arrivalTime').textContent = calculateArrivalTime();
+        // 페이지 초기화
+        function initializePage() {
+            // 총 비용 및 시간 표시
+            const totalCost = calculateTotalCost();
+            const totalTime = calculateTotalTime();
 
-            // 항공편 렌더링 (취소표 우선 정렬)
+            document.getElementById('totalCost').textContent = formatCurrency(totalCost);
+            document.getElementById('totalTime').textContent = totalTime;
+
+            // 항공편 렌더링 (취소표 우선)
             const sortedFlights = [...flightsData].sort((a, b) => b.cancelled - a.cancelled);
             document.getElementById('flightsGrid').innerHTML = sortedFlights.map(renderTransportCard).join('');
 
-            // 기차 렌더링
+            // 국제 기차 렌더링
             document.getElementById('trainsGrid').innerHTML = trainsData.map(renderTransportCard).join('');
 
-            // 버스 렌더링
-            document.getElementById('busesGrid').innerHTML = busesData.map(renderTransportCard).join('');
+            // 런던 지하철 렌더링
+            document.getElementById('tubeGrid').innerHTML = tubeData.map(renderTransportCard).join('');
 
-            // 관광지 렌더링
-            document.getElementById('attractionsGrid').innerHTML = attractionsData.map((place, idx) =>
-                renderRecommendationCard(place, idx)
-            ).join('');
+            // 런던 버스 렌더링
+            document.getElementById('busGrid').innerHTML = busData.map(renderTransportCard).join('');
 
-            // 맛집 렌더링
-            document.getElementById('restaurantsGrid').innerHTML = restaurantsData.map((place, idx) =>
-                renderRecommendationCard(place, idx)
-            ).join('');
+            // 택시 렌더링
+            document.getElementById('taxiGrid').innerHTML = taxiData.map(renderTransportCard).join('');
+
+            // 7일 일정 렌더링
+            document.getElementById('itineraryGrid').innerHTML = itineraryData.map(renderDayCard).join('');
+
+            console.log('✈️ 여행 플래너 로딩 완료!');
+            console.log(`총 비용: ${formatCurrency(totalCost)}`);
+            console.log(`총 시간: ${totalTime}`);
         }
 
-        // ==================== Google Maps 초기화 ====================
-
-        let map;
-        let markers = [];
-
-        function initMap() {
-            // 지도 생성 (런던 중심으로)
-            map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 5,
-                center: { lat: 50, lng: 30 }, // 서울과 런던 중간 지점
-                styles: [
-                    {
-                        featureType: 'poi',
-                        elementType: 'labels',
-                        stylers: [{ visibility: 'off' }]
-                    }
-                ]
-            });
-
-            // 서울 마커
-            const seoulMarker = new google.maps.Marker({
-                position: { lat: tripData.origin.lat, lng: tripData.origin.lng },
-                map: map,
-                title: tripData.origin.name,
-                icon: {
-                    url: 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
-                }
-            });
-
-            // 런던 마커
-            const londonMarker = new google.maps.Marker({
-                position: { lat: tripData.destination.lat, lng: tripData.destination.lng },
-                map: map,
-                title: tripData.destination.name,
-                icon: {
-                    url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
-                }
-            });
-
-            // 경로 그리기 (곡선)
-            const flightPath = new google.maps.Polyline({
-                path: [
-                    { lat: tripData.origin.lat, lng: tripData.origin.lng },
-                    { lat: tripData.destination.lat, lng: tripData.destination.lng }
-                ],
-                geodesic: true,
-                strokeColor: '#2196F3',
-                strokeOpacity: 0.8,
-                strokeWeight: 3,
-                icons: [{
-                    icon: {
-                        path: google.maps.SymbolPath.FORWARD_CLOSED_ARROW
-                    },
-                    offset: '100%'
-                }]
-            });
-            flightPath.setMap(map);
-
-            // 관광지 마커 추가
-            attractionsData.forEach((place, index) => {
-                const marker = new google.maps.Marker({
-                    position: { lat: place.lat, lng: place.lng },
-                    map: map,
-                    title: place.name,
-                    label: {
-                        text: String(index + 1),
-                        color: 'white',
-                        fontWeight: 'bold'
-                    },
-                    icon: {
-                        url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
-                    }
-                });
-
-                const infoWindow = new google.maps.InfoWindow({
-                    content: `
-                        <div style="padding: 10px;">
-                            <h3 style="margin: 0 0 5px 0;">${place.name}</h3>
-                            <p style="margin: 0; color: #666;">${place.category}</p>
-                            <p style="margin: 5px 0 0 0; font-weight: 600;">⭐ ${place.rating}</p>
-                        </div>
-                    `
-                });
-
-                marker.addListener('click', () => {
-                    // 모든 infoWindow 닫기
-                    markers.forEach(m => m.infoWindow.close());
-                    // 현재 infoWindow 열기
-                    infoWindow.open(map, marker);
-                });
-
-                markers.push({ marker, infoWindow });
-            });
-        }
-
-        // 지도에서 특정 위치에 포커스
-        function focusOnMap(lat, lng, name) {
-            if (map) {
-                map.setCenter({ lat, lng });
-                map.setZoom(15);
-
-                // 해당 마커의 infoWindow 열기
-                const targetMarker = markers.find(m =>
-                    m.marker.getPosition().lat() === lat &&
-                    m.marker.getPosition().lng() === lng
-                );
-
-                if (targetMarker) {
-                    // 모든 infoWindow 닫기
-                    markers.forEach(m => m.infoWindow.close());
-                    // 타겟 infoWindow 열기
-                    targetMarker.infoWindow.open(map, targetMarker.marker);
-                }
-            }
-        }
-
-        // ==================== API 키 관리 ====================
-
-        function saveApiKey() {
-            const apiKey = document.getElementById('apiKeyInput').value.trim();
-            if (apiKey) {
-                localStorage.setItem('googleMapsApiKey', apiKey);
-                document.getElementById('apiModal').classList.remove('active');
-                loadGoogleMapsScript(apiKey);
-            } else {
-                alert('API 키를 입력해주세요.');
-            }
-        }
-
-        function skipApiKey() {
-            document.getElementById('apiModal').classList.remove('active');
-            document.getElementById('map').innerHTML = `
-                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%; background: var(--bg-light);">
-                    <div style="font-size: 4rem; margin-bottom: 20px;">🗺️</div>
-                    <h3 style="margin-bottom: 10px; color: var(--text-dark);">데모 모드</h3>
-                    <p style="color: var(--text-light); text-align: center; max-width: 400px;">
-                        Google Maps API 키를 설정하면<br>인터랙티브 지도를 사용할 수 있습니다.
-                    </p>
-                    <button onclick="showApiModal()" style="margin-top: 20px; padding: 10px 20px; background: var(--primary-color); color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 1rem;">
-                        API 키 설정하기
-                    </button>
-                </div>
-            `;
-        }
-
-        function showApiModal() {
-            document.getElementById('apiModal').classList.add('active');
-        }
-
-        function loadGoogleMapsScript(apiKey) {
-            const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
-            script.async = true;
-            script.defer = true;
-            document.head.appendChild(script);
-        }
-
-        // ==================== 초기화 ====================
-
-        document.addEventListener('DOMContentLoaded', () => {
-            // 콘텐츠 렌더링
-            initializeContent();
-
-            // API 키 확인
-            const savedApiKey = localStorage.getItem('googleMapsApiKey');
-            if (savedApiKey) {
-                loadGoogleMapsScript(savedApiKey);
-            } else {
-                // API 키가 없으면 모달 표시
-                document.getElementById('apiModal').classList.add('active');
-            }
-
-            // 성능 최적화: 이미지 lazy loading 적용 (필요시)
-            if ('loading' in HTMLImageElement.prototype) {
-                const images = document.querySelectorAll('img[loading="lazy"]');
-                images.forEach(img => {
-                    img.src = img.dataset.src;
-                });
-            }
-
-            // 초기 로딩 완료 로그
-            console.log('✈️ 여행 플래너 애플리케이션 로딩 완료!');
-            console.log(`출발: ${tripData.origin.name}`);
-            console.log(`목적지: ${tripData.destination.name}`);
-            console.log(`총 ${flightsData.length}개 항공편, ${attractionsData.length}개 관광지, ${restaurantsData.length}개 맛집 정보 로드됨`);
-        });
-
-        // 페이지 가시성 변경 시 성능 최적화
-        document.addEventListener('visibilitychange', () => {
-            if (document.hidden) {
-                // 페이지가 백그라운드로 갈 때 리소스 절약
-                console.log('페이지 백그라운드 전환 - 리소스 최적화 활성화');
-            } else {
-                // 페이지가 다시 활성화될 때
-                console.log('페이지 활성화 - 정상 동작 재개');
-            }
-        });
+        // 페이지 로드 시 초기화
+        document.addEventListener('DOMContentLoaded', initializePage);
     </script>
 </body>
 </html>
