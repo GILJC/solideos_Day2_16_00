@@ -322,12 +322,34 @@
             padding: 20px;
             transition: all 0.3s;
             cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
         }
 
         .transport-card:hover {
             border-color: var(--primary-color);
             box-shadow: var(--shadow-hover);
             transform: translateY(-5px);
+        }
+
+        .book-button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+        }
+
+        .book-button:hover {
+            background: #1976D2;
+            transform: scale(1.02);
         }
 
         .transport-card.cancelled {
@@ -376,6 +398,56 @@
             gap: 5px;
             font-size: 0.9rem;
             color: var(--text-light);
+        }
+
+        /* 추천 카드 (음식 & 관광지) */
+        .recommendations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .recommendation-card {
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s;
+            background: var(--white);
+        }
+
+        .recommendation-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-hover);
+            transform: translateY(-5px);
+        }
+
+        .rec-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+            gap: 10px;
+        }
+
+        .rec-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            line-height: 1.3;
+        }
+
+        .rec-rating {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .rec-description {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.5;
         }
 
         /* 탭 시스템 */
@@ -594,6 +666,18 @@
                 <div class="itinerary" id="itineraryGrid"></div>
             </section>
 
+            <!-- 먹어볼 음식 추천 -->
+            <section class="section">
+                <h2>🍽️ 꼭 먹어봐야 할 음식</h2>
+                <div class="recommendations-grid" id="foodsGrid"></div>
+            </section>
+
+            <!-- 가야할 장소 추천 -->
+            <section class="section">
+                <h2>🏛️ 꼭 가봐야 할 장소</h2>
+                <div class="recommendations-grid" id="placesGrid"></div>
+            </section>
+
             <!-- 런던 현지 교통 -->
             <section class="section">
                 <h2>🚇 런던 현지 교통</h2>
@@ -684,7 +768,8 @@
                     details: `${originCity.airport} → ${destCity.airport} 직항`,
                     cancelled: true,
                     cancelReason: '좌석 취소 발생 - 즉시 예약 가능!',
-                    tripType: '편도'
+                    tripType: '편도',
+                    bookingUrl: 'https://www.koreanair.com/'
                 },
                 {
                     id: 2,
@@ -696,7 +781,8 @@
                     durationMin: flightHours + 30,
                     details: `${originCity.airport} → ${destCity.airport} 직항`,
                     cancelled: false,
-                    tripType: '편도'
+                    tripType: '편도',
+                    bookingUrl: 'https://flyasiana.com/'
                 },
                 {
                     id: 3,
@@ -708,7 +794,8 @@
                     durationMin: flightHours + 45,
                     details: `${originCity.airport} → ${destCity.airport} 직항`,
                     cancelled: false,
-                    tripType: '편도'
+                    tripType: '편도',
+                    bookingUrl: 'https://www.jejuair.net/'
                 },
                 {
                     id: 4,
@@ -720,7 +807,8 @@
                     durationMin: flightHours + 60,
                     details: `${originCity.airport} → ${destCity.airport} 직항`,
                     cancelled: false,
-                    tripType: '편도'
+                    tripType: '편도',
+                    bookingUrl: 'https://www.airseoul.com/'
                 }
             ];
         }
@@ -753,7 +841,8 @@
                     details: `왕복 | ${originCity.airport} ⇄ ${destCity.airport} 직항`,
                     cancelled: true,
                     cancelReason: '왕복 특가! 좌석 취소 발생',
-                    tripType: '왕복'
+                    tripType: '왕복',
+                    bookingUrl: 'https://www.koreanair.com/'
                 },
                 {
                     id: 2,
@@ -765,7 +854,8 @@
                     durationMin: flightHours + 30,
                     details: `왕복 | ${originCity.airport} ⇄ ${destCity.airport} 직항`,
                     cancelled: false,
-                    tripType: '왕복'
+                    tripType: '왕복',
+                    bookingUrl: 'https://flyasiana.com/'
                 },
                 {
                     id: 3,
@@ -777,7 +867,8 @@
                     durationMin: flightHours + 45,
                     details: `왕복 | ${originCity.airport} ⇄ ${destCity.airport} 직항`,
                     cancelled: false,
-                    tripType: '왕복'
+                    tripType: '왕복',
+                    bookingUrl: 'https://www.jejuair.net/'
                 },
                 {
                     id: 4,
@@ -789,7 +880,8 @@
                     durationMin: flightHours + 60,
                     details: `왕복 | ${originCity.airport} ⇄ ${destCity.airport} 직항`,
                     cancelled: false,
-                    tripType: '왕복'
+                    tripType: '왕복',
+                    bookingUrl: 'https://www.airseoul.com/'
                 },
                 {
                     id: 5,
@@ -801,7 +893,8 @@
                     durationMin: flightHours + 75,
                     details: `왕복 | ${originCity.airport} ⇄ ${destCity.airport} 직항`,
                     cancelled: false,
-                    tripType: '왕복'
+                    tripType: '왕복',
+                    bookingUrl: 'https://www.twayair.com/'
                 }
             ];
         }
@@ -809,6 +902,133 @@
         // 항공편 데이터 (동적 생성)
         let onewayFlightsData = generateOnewayFlightData('seoul', 'london');
         let roundtripFlightsData = generateRoundtripFlightData('seoul', 'london');
+
+        // 도시별 추천 음식 데이터
+        const foodsByCity = {
+            london: [
+                { name: 'Fish & Chips', icon: '🐟', description: '영국 대표 음식. 바삭한 튀김과 두툼한 감자튀김', price: '₩15,000' },
+                { name: 'Sunday Roast', icon: '🍖', description: '구운 고기와 요크셔 푸딩, 로스트 포테이토', price: '₩25,000' },
+                { name: 'Afternoon Tea', icon: '☕', description: '스콘, 샌드위치, 케이크와 홍차 세트', price: '₩40,000' },
+                { name: 'Meat Pie', icon: '🥧', description: '영국식 고기 파이, 점심으로 인기', price: '₩12,000' },
+                { name: 'Full English Breakfast', icon: '🍳', description: '베이컨, 소시지, 계란, 빈스, 토스트', price: '₩18,000' }
+            ],
+            paris: [
+                { name: 'Croissant', icon: '🥐', description: '버터 향 가득한 프랑스 크루아상', price: '₩5,000' },
+                { name: 'Escargot', icon: '🐌', description: '버터와 마늘로 조리한 달팽이 요리', price: '₩30,000' },
+                { name: 'Steak Frites', icon: '🥩', description: '스테이크와 감자튀김', price: '₩35,000' },
+                { name: 'Crêpe', icon: '🥞', description: '얇은 팬케이크, 다양한 토핑', price: '₩8,000' },
+                { name: 'Coq au Vin', icon: '🍗', description: '와인에 조린 프랑스식 치킨', price: '₩40,000' }
+            ],
+            cebu: [
+                { name: 'Lechon', icon: '🐷', description: '필리핀 대표 요리, 바삭한 통돼지구이', price: '₩20,000' },
+                { name: 'Halo-Halo', icon: '🍧', description: '필리핀식 빙수, 달콤한 디저트', price: '₩5,000' },
+                { name: 'Sisig', icon: '🍖', description: '돼지고기 철판 구이, 매콤한 맛', price: '₩8,000' },
+                { name: 'Adobo', icon: '🍲', description: '간장과 식초로 조린 필리핀 스튜', price: '₩10,000' },
+                { name: 'Lumpia', icon: '🥟', description: '필리핀식 스프링롤', price: '₩6,000' }
+            ],
+            danang: [
+                { name: 'Mi Quang', icon: '🍜', description: '다낭 대표 국수, 노란 면발', price: '₩7,000' },
+                { name: 'Banh Xeo', icon: '🥞', description: '베트남식 바삭한 전병', price: '₩8,000' },
+                { name: 'Com Ga', icon: '🍚', description: '치킨 라이스, 부드러운 닭고기', price: '₩10,000' },
+                { name: 'Bun Cha Ca', icon: '🐟', description: '생선 케이크 국수', price: '₩9,000' },
+                { name: 'Cao Lau', icon: '🍝', description: '호이안 전통 국수', price: '₩8,000' }
+            ],
+            nhatrang: [
+                { name: 'Bun Cha', icon: '🍜', description: '숯불 돼지고기와 국수', price: '₩8,000' },
+                { name: 'Nem Nuong', icon: '🍢', description: '구운 돼지고기 미트볼', price: '₩10,000' },
+                { name: '해산물 BBQ', icon: '🦐', description: '신선한 새우, 게, 생선 바비큐', price: '₩25,000' },
+                { name: 'Banh Can', icon: '🥞', description: '나트랑 특산 미니 팬케이크', price: '₩6,000' },
+                { name: 'Bun Sua', icon: '🍲', description: '해파리 국수', price: '₩9,000' }
+            ],
+            hochiminh: [
+                { name: 'Pho', icon: '🍜', description: '베트남 대표 쌀국수', price: '₩7,000' },
+                { name: 'Banh Mi', icon: '🥖', description: '바게트 샌드위치', price: '₩5,000' },
+                { name: 'Bun Bo Hue', icon: '🍲', description: '후에식 소고기 국수, 매운 맛', price: '₩9,000' },
+                { name: 'Com Tam', icon: '🍚', description: '부서진 쌀밥과 돼지고기', price: '₩8,000' },
+                { name: 'Goi Cuon', icon: '🥗', description: '월남쌈, 신선한 롤', price: '₩6,000' }
+            ],
+            osaka: [
+                { name: 'Takoyaki', icon: '🐙', description: '오사카 명물 문어빵', price: '₩8,000' },
+                { name: 'Okonomiyaki', icon: '🥞', description: '오사카식 부침개', price: '₩12,000' },
+                { name: 'Kushikatsu', icon: '🍢', description: '꼬치 튀김', price: '₩15,000' },
+                { name: 'Ramen', icon: '🍜', description: '진한 육수의 라멘', price: '₩10,000' },
+                { name: 'Kobe Beef', icon: '🥩', description: '고베 와규 스테이크', price: '₩80,000' }
+            ],
+            tokyo: [
+                { name: 'Sushi', icon: '🍣', description: '신선한 생선 초밥', price: '₩30,000' },
+                { name: 'Ramen', icon: '🍜', description: '도쿄 스타일 라멘', price: '₩12,000' },
+                { name: 'Tempura', icon: '🍤', description: '바삭한 튀김', price: '₩25,000' },
+                { name: 'Tonkatsu', icon: '🍖', description: '돈까스', price: '₩15,000' },
+                { name: 'Yakitori', icon: '🍢', description: '닭꼬치 구이', price: '₩18,000' }
+            ]
+        };
+
+        // 도시별 추천 관광지 데이터
+        const placesByCity = {
+            london: [
+                { name: '대영박물관', icon: '🏛️', description: '세계 최대 박물관, 무료 입장', fee: '무료' },
+                { name: '타워 브리지', icon: '🌉', description: '런던의 상징적인 다리', fee: '₩15,000' },
+                { name: '빅벤', icon: '🕰️', description: '영국 국회의사당 시계탑', fee: '무료(외관)' },
+                { name: '버킹엄 궁전', icon: '👑', description: '영국 왕실의 거주지', fee: '₩35,000' },
+                { name: '런던 아이', icon: '🎡', description: '대관람차에서 보는 전망', fee: '₩45,000' }
+            ],
+            paris: [
+                { name: '에펠탑', icon: '🗼', description: '파리의 상징, 야경 필수', fee: '₩30,000' },
+                { name: '루브르 박물관', icon: '🖼️', description: '모나리자가 있는 세계적 박물관', fee: '₩25,000' },
+                { name: '개선문', icon: '🏛️', description: '샹젤리제 거리의 랜드마크', fee: '₩18,000' },
+                { name: '몽마르트 언덕', icon: '⛪', description: '사크레쾨르 성당과 예술가 거리', fee: '무료' },
+                { name: '베르사유 궁전', icon: '👑', description: '프랑스 왕궁의 화려함', fee: '₩28,000' }
+            ],
+            cebu: [
+                { name: 'Oslob 고래상어', icon: '🦈', description: '고래상어와 스노클링', fee: '₩30,000' },
+                { name: 'Kawasan Falls', icon: '💦', description: '에메랄드빛 폭포', fee: '₩15,000' },
+                { name: 'Magellan\'s Cross', icon: '✝️', description: '마젤란 십자가', fee: '무료' },
+                { name: 'Fort San Pedro', icon: '🏰', description: '스페인 요새', fee: '₩3,000' },
+                { name: '탑스 전망대', icon: '🌄', description: '세부 시내 야경 명소', fee: '₩5,000' }
+            ],
+            moalboal: [
+                { name: 'Pescador Island', icon: '🏝️', description: '다이빙 최고 포인트', fee: '₩40,000' },
+                { name: '정어리 런', icon: '🐟', description: '수백만 마리 정어리 무리', fee: '₩20,000' },
+                { name: 'Panagsama Beach', icon: '🏖️', description: '다이빙 해변', fee: '무료' },
+                { name: 'White Beach', icon: '🌊', description: '하얀 모래 해변', fee: '₩2,000' },
+                { name: '카와산 캐녀닝', icon: '🌊', description: '폭포 트레킹', fee: '₩35,000' }
+            ],
+            danang: [
+                { name: '바나힐', icon: '🎢', description: '황금 다리와 케이블카', fee: '₩35,000' },
+                { name: '미케 비치', icon: '🏖️', description: '세계 6대 해변', fee: '무료' },
+                { name: '참 조각 박물관', icon: '🗿', description: '참파 왕국 유적', fee: '₩8,000' },
+                { name: '오행산', icon: '⛰️', description: '대리석 산', fee: '₩5,000' },
+                { name: '호이안 고대도시', icon: '🏮', description: '유네스코 세계문화유산', fee: '₩15,000' }
+            ],
+            nhatrang: [
+                { name: '빈펄랜드', icon: '🎢', description: '해상 케이블카와 테마파크', fee: '₩40,000' },
+                { name: '롱선사', icon: '🛕', description: '거대한 백색 불상', fee: '무료' },
+                { name: '나트랑 비치', icon: '🏖️', description: '베트남 최고 해변', fee: '무료' },
+                { name: '혼쩌우 섬', icon: '🏝️', description: '스노클링 명소', fee: '₩25,000' },
+                { name: '포나가르 참탑', icon: '🏛️', description: '힌두 사원 유적', fee: '₩3,000' }
+            ],
+            hochiminh: [
+                { name: '전쟁증적박물관', icon: '🏛️', description: '베트남 전쟁 역사', fee: '₩3,000' },
+                { name: '벤탄시장', icon: '🛍️', description: '호치민 최대 재래시장', fee: '무료' },
+                { name: '노틀담 대성당', icon: '⛪', description: '프랑스 고딕 양식', fee: '무료' },
+                { name: '중앙우체국', icon: '📮', description: '아름다운 식민지 건축', fee: '무료' },
+                { name: '통일궁', icon: '🏛️', description: '베트남 통일의 상징', fee: '₩5,000' }
+            ],
+            osaka: [
+                { name: '오사카성', icon: '🏯', description: '일본 3대 명성', fee: '₩8,000' },
+                { name: '도톤보리', icon: '🌆', description: '오사카 먹거리 거리', fee: '무료' },
+                { name: '유니버설 스튜디오', icon: '🎢', description: 'USJ 테마파크', fee: '₩80,000' },
+                { name: '신사이바시', icon: '🛍️', description: '쇼핑 거리', fee: '무료' },
+                { name: '우메다 스카이 빌딩', icon: '🏙️', description: '전망대', fee: '₩15,000' }
+            ],
+            tokyo: [
+                { name: '센소지', icon: '⛩️', description: '도쿄 최고 사찰', fee: '무료' },
+                { name: '도쿄 스카이트리', icon: '🗼', description: '634m 전망대', fee: '₩30,000' },
+                { name: '시부야 교차로', icon: '🚦', description: '세계에서 가장 붐비는 교차로', fee: '무료' },
+                { name: '메이지 신궁', icon: '⛩️', description: '도쿄 최대 신사', fee: '무료' },
+                { name: '디즈니랜드', icon: '🏰', description: '도쿄 디즈니리조트', fee: '₩90,000' }
+            ]
+        };
 
         // 국제 기차 데이터
         const trainsData = [
@@ -1072,6 +1292,22 @@
             const sortedOneway = [...onewayFlightsData].sort((a, b) => b.cancelled - a.cancelled);
             document.getElementById('onewayFlightsGrid').innerHTML = sortedOneway.map(renderTransportCard).join('');
 
+            // 음식 렌더링
+            const foods = foodsByCity[destination] || [];
+            if (foods.length > 0) {
+                document.getElementById('foodsGrid').innerHTML = foods.map(renderFoodCard).join('');
+            } else {
+                document.getElementById('foodsGrid').innerHTML = '<p style="text-align: center; padding: 40px; color: var(--text-light);">해당 도시의 음식 정보가 곧 업데이트됩니다.</p>';
+            }
+
+            // 관광지 렌더링
+            const places = placesByCity[destination] || [];
+            if (places.length > 0) {
+                document.getElementById('placesGrid').innerHTML = places.map(renderPlaceCard).join('');
+            } else {
+                document.getElementById('placesGrid').innerHTML = '<p style="text-align: center; padding: 40px; color: var(--text-light);">해당 도시의 관광지 정보가 곧 업데이트됩니다.</p>';
+            }
+
             // 총 비용 재계산 및 업데이트
             const totalCost = calculateTotalCost();
             document.getElementById('totalCost').textContent = formatCurrency(totalCost);
@@ -1081,8 +1317,9 @@
                 `🌍 ${originCity.name} → ${destCity.name} 여행 플래너`;
 
             // 현지 교통 섹션 제목 업데이트
-            document.querySelector('.main-content .section:last-of-type h2').textContent =
-                `🚇 ${destCity.name} 현지 교통`;
+            const sections = document.querySelectorAll('.main-content .section');
+            const lastSection = sections[sections.length - 1];
+            lastSection.querySelector('h2').textContent = `🚇 ${destCity.name} 현지 교통`;
 
             console.log(`✈️ 여행 업데이트: ${originCity.name} → ${destCity.name}`);
         }
@@ -1097,6 +1334,9 @@
             const note = transport.note ?
                 `<div style="color: var(--danger-color); font-size: 0.85rem; margin-top: 10px;">${transport.note}</div>` : '';
 
+            const bookButton = transport.bookingUrl ?
+                `<button class="book-button" onclick="window.open('${transport.bookingUrl}', '_blank'); event.stopPropagation();">🎫 예약하기</button>` : '';
+
             return `
                 <div class="${cancelledClass}">
                     ${cancelledBadge}
@@ -1108,6 +1348,37 @@
                         <div>📍 ${transport.details}</div>
                     </div>
                     ${note}
+                    ${bookButton}
+                </div>
+            `;
+        }
+
+        // 음식 카드 렌더링
+        function renderFoodCard(food) {
+            return `
+                <div class="recommendation-card">
+                    <div class="rec-header">
+                        <div>
+                            <div class="rec-title">${food.icon} ${food.name}</div>
+                        </div>
+                        <div class="rec-rating">${food.price}</div>
+                    </div>
+                    <div class="rec-description">${food.description}</div>
+                </div>
+            `;
+        }
+
+        // 관광지 카드 렌더링
+        function renderPlaceCard(place) {
+            return `
+                <div class="recommendation-card">
+                    <div class="rec-header">
+                        <div>
+                            <div class="rec-title">${place.icon} ${place.name}</div>
+                        </div>
+                        <div class="rec-rating">${place.fee}</div>
+                    </div>
+                    <div class="rec-description">${place.description}</div>
                 </div>
             `;
         }
@@ -1186,6 +1457,22 @@
 
             // 7일 일정 렌더링
             document.getElementById('itineraryGrid').innerHTML = itineraryData.map(renderDayCard).join('');
+
+            // 초기 음식 렌더링
+            const initialFoods = foodsByCity[currentTrip.destination] || [];
+            if (initialFoods.length > 0) {
+                document.getElementById('foodsGrid').innerHTML = initialFoods.map(renderFoodCard).join('');
+            } else {
+                document.getElementById('foodsGrid').innerHTML = '<p style="text-align: center; padding: 40px; color: var(--text-light);">해당 도시의 음식 정보가 곧 업데이트됩니다.</p>';
+            }
+
+            // 초기 관광지 렌더링
+            const initialPlaces = placesByCity[currentTrip.destination] || [];
+            if (initialPlaces.length > 0) {
+                document.getElementById('placesGrid').innerHTML = initialPlaces.map(renderPlaceCard).join('');
+            } else {
+                document.getElementById('placesGrid').innerHTML = '<p style="text-align: center; padding: 40px; color: var(--text-light);">해당 도시의 관광지 정보가 곧 업데이트됩니다.</p>';
+            }
 
             // 현지 교통 섹션 제목 설정
             document.querySelector('.main-content .section:last-of-type h2').textContent =
